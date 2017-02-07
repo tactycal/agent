@@ -1,0 +1,10 @@
+version: "2"
+services:
+  agent:
+    build:
+      context: ./
+      dockerfile: Dockerfile.debian
+    working_dir: /go/src/agent
+    volumes:
+      - ./:/go/src/agent
+      - .//.state/:/state/

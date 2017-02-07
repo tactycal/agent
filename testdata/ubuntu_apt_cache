@@ -1,0 +1,41 @@
+gtk2-engines-murrine:
+  Installed: (none)
+  Candidate: 0.98.2-0ubuntu1
+  Version table:
+     0.98.2-0ubuntu1 0
+        500 http://archive.ubuntu.com/ubuntu/ precise/main amd64 Packages
+skype:i386:
+  Installed: 4.2.0.11-1
+  Candidate: 4.2.0.11-1
+  Version table:
+ *** 4.2.0.11-1 0
+        100 /var/lib/dpkg/status
+apt:
+  Installed: 0.8.16~exp12ubuntu10.27
+  Candidate: 0.8.16~exp12ubuntu10.27
+  Version table:
+ *** 0.8.16~exp12ubuntu10.27 0
+        500 http://archive.ubuntu.com/ubuntu/ precise-updates/main amd64 Packages
+        100 /var/lib/dpkg/status
+     0.8.16~exp12ubuntu10.21 0
+        500 http://archive.ubuntu.com/ubuntu/ precise-security/main amd64 Packages
+     0.8.16~exp12ubuntu10 0
+        500 http://archive.ubuntu.com/ubuntu/ precise/main amd64 Packages
+oracle-java8-installer:
+  Installed: 8u111+8u111arm-1~webupd8~0
+  Candidate: 8u111+8u111arm-1~webupd8~0
+  Version table:
+ *** 8u111+8u111arm-1~webupd8~0 0
+        500 http://ppa.launchpad.net/webupd8team/java/ubuntu/ precise/main amd64 Packages
+        100 /var/lib/dpkg/status
+apt-xapian-index:
+  Installed: 0.44ubuntu5.1
+  Candidate: 0.44ubuntu5.1
+  Version table:
+ *** 0.44ubuntu5.1 0
+        500 http://archive.ubuntu.com/ubuntu/ precise-updates/main amd64 Packages
+        500 http://archive.ubuntu.com/ubuntu/ precise-security/main amd64 Packages
+        100 /var/lib/dpkg/status
+     0.44ubuntu5 0
+        500 http://archive.ubuntu.com/ubuntu/ precise/main amd64 Packages
+

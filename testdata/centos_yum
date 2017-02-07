@@ -1,0 +1,13 @@
+Installed Packages
+Name        : audit-libs
+Arch        : x86_64
+Version     : 2.3.7
+Release     : 5.el6
+Size        : 222 k
+Repo        : installed
+From repo   : CentOS
+Summary     : Dynamic library for libaudit
+URL         : http://people.redhat.com/sgrubb/audit/
+License     : LGPLv2+
+Description : The audit-libs package contains the dynamic libraries needed for
+            : applications to use the audit framework.

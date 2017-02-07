@@ -1,0 +1,62 @@
+Package: gtk2-engines-murrine
+Status: install ok installed
+Multi-Arch: same
+Priority: optional
+Section: x11
+Installed-Size: 330
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: i386
+Version: 0.98.2-0ubuntu1
+Depends: libc6 (>= 2.4), libcairo2 (>= 1.2.4), libgdk-pixbuf2.0-0 (>= 2.22.0), libglib2.0-0 (>= 2.24.0), libgtk2.0-0 (>= 2.24.5-4), libpango1.0-0 (>= 1.14.0), libpixman-1-0 (>= 0.15.14)
+Suggests: murrine-themes (>= 0.98)
+
+Package: skype
+Status: install ok installed
+Priority: extra
+Section: non-free/net
+Installed-Size: 38748
+Maintainer: Skype Technologies <info@skype.net>
+Architecture: i386
+Version: 4.2.0.11-1
+Replaces: skype-mid, skype-common, skype-bin
+
+Package: apt
+Status: install ok installed
+Priority: important
+Section: admin
+Installed-Size: 3180
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 0.8.16~exp12ubuntu10.27
+Replaces: manpages-pl (<< 20060617-3~)
+Depends: ubuntu-keyring, libapt-pkg4.12 (>= 0.8.16~exp12ubuntu10.27), libc6 (>= 2.15), libgcc1 (>= 1:4.1.1), libstdc++6 (>= 4.6), gnupg
+Pre-Depends: dpkg (>= 1.15.7.2)
+Suggests: aptitude | synaptic | wajig, dpkg-dev, apt-doc, bzip2, lzma, python-apt
+Conflicts: python-apt (<< 0.7.93.2~)
+
+Package: oracle-java8-installer
+Status: install ok installed
+Priority: optional
+Section: non-free/java
+Installed-Size: 91
+Maintainer: Alin Andrei <webupd8@gmail.com>
+Architecture: all
+Version: 8u111+8u111arm-1~webupd8~0
+Replaces: icedtea-6-plugin, icedtea-7-plugin, openjdk-6-jre, openjdk-6-jre-headless, openjdk-7-jdk, openjdk-7-jre, openjdk-7-jre-headless, oracle-java7-bin, oracle-java7-fonts, oracle-java7-jdk, oracle-java7-jre, oracle-java7-plugin, oracle-java8-bin, oracle-java8-fonts, oracle-java8-jdk, oracle-java8-jre, oracle-java8-plugin, oracle-jdk7-installer, oracle-jdk8-installer
+Provides: default-jre, default-jre-headless, icedtea-6-plugin, icedtea-7-plugin, java-compiler, java-jdk, java-runtime, java-runtime-headless, java-sdk, java-virtual-machine, java2-jdk, java2-runtime, java2-runtime-headless, java2-sdk, java5-jdk, java5-runtime, java5-runtime-headless, java5-sdk, java6-jdk, java6-runtime, java6-runtime-headless, java6-sdk, java7-jdk, java7-runtime, java7-runtime-headless, java7-sdk, java8-jdk, java8-runtime, java8-runtime-headless, java8-sdk, openjdk-6-jre, openjdk-6-jre-headless, openjdk-7-jdk, openjdk-7-jre, openjdk-7-jre-headless, oracle-java7-bin, oracle-java7-fonts, oracle-java7-jdk, oracle-java7-jre, oracle-java7-plugin, oracle-java8-bin, oracle-java8-fonts, oracle-java8-jdk, oracle-java8-jre, oracle-java8-plugin
+Depends: java-common (>= 0.24), locales
+Pre-Depends: wget, binutils, debconf (>= 0.5) | debconf-2.0
+Recommends: gsfonts-x11, oracle-java8-set-default
+Suggests: binfmt-support, visualvm, ttf-baekmuk | ttf-unfonts | ttf-unfonts-core, ttf-kochi-gothic | ttf-sazanami-gothic, ttf-kochi-mincho | ttf-sazanami-mincho, ttf-arphic-uming, firefox | firefox-2 | iceweasel | mozilla-firefox | iceape-browser | mozilla-browser | epiphany-gecko | epiphany-webkit | epiphany-browser | galeon | midbrowser | moblin-web-browser | xulrunner | xulrunner-1.9 | konqueror | chromium-browser | midori | google-chrome
+Conflicts: j2se-common
+
+Package: apt-xapian-index
+Status: install ok installed
+Priority: optional
+Section: admin
+Installed-Size: 334
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 0.44ubuntu5.1
+Depends: python (>= 2.7.1-0ubuntu2), python-xapian (>= 1.0.2), python-apt (>= 0.7.93.2), python-debian (>= 0.1.14), python2.7, python (<< 2.8)
+Suggests: app-install-data, python-xdg

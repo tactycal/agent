@@ -1,0 +1,5 @@
+FROM sigscicmd/fpm-deb
+
+COPY pkg /build
+COPY scripts /scripts
+

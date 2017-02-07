@@ -1,0 +1,37 @@
+version: "2"
+services:
+  agentdebian:
+    extends:
+      file: docker-compose.tmpl
+      service: agent
+    build:
+      dockerfile: Dockerfile.debian
+    command: make run/debian
+    environment:
+      - LABEL=debianenv
+
+  agentubuntu:
+    extends:
+      file: docker-compose.tmpl
+      service: agent
+    build:
+      dockerfile: Dockerfile.ubuntu
+    command: make run/ubuntu
+    environment:
+      - LABEL=ubuntuenv
+
+  agentrhel:
+    extends:
+      file: docker-compose.tmpl
+      service: agent
+    build:
+      dockerfile: Dockerfile.rhel
+    command: go run -tags rhel client.go config.go host.go host_rpm.go log.go main.go packages.go packages_rhel.go packages_yum.go state.go version.go -f my_conf.conf -s .state/rhel -t 3s -d
+
+  agentcentos:
+    extends:
+      file: docker-compose.tmpl
+      service: agent
+    build:
+      dockerfile: Dockerfile.centos
+    command: make run/centos

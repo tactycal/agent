@@ -1,0 +1,6 @@
+/bin/
+/pkg/
+/data/
+/build/
+/.state
+/Dockerfile.qa

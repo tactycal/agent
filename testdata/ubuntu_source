@@ -1,0 +1,9 @@
+# match
+deb http://archive.ubuntu.com/ubuntu/ precise main restricted
+
+# match
+deb-src http://archive.ubuntu.com/ubuntu/ precise main restricted
+
+
+# doesn't match
+src http://does't match .ubuntu.com/ubuntu/ precise main restricted
