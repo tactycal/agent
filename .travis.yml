@@ -1,0 +1,47 @@
+language: go
+
+go:
+- 1.7.5
+- 1.8rc3
+
+env:
+  matrix:
+  - DISTRIBUTION=ubuntu
+  - DISTRIBUTION=debian
+  - DISTRIBUTION=centos
+  - DISTRIBUTION=rhel
+
+script: make test/$DISTRIBUTION
+
+before_install:
+  - sudo apt-get -qa update
+  - sudo apt-get install -y make gcc rpm
+
+before_deploy:
+  - gem install fpm --no-document
+  - VERSION=${TRAVIS_TAG:=$(cat ./VERSION)} make pkg/$DISTRIBUTION
+  - sed -i'' -e "s/\DISTRIBUTION/${DISTRIBUTION}/" descriptor.json
+  - sed -i'' -e "s/\VERSION/${TRAVIS_TAG:=$(cat ./VERSION)}/" descriptor.json
+  - sed -i'' -e "s/\DATE/$(date +%Y-%m-%d)/" descriptor.json
+  - if [ $TRAVIS_TAG ]; then SUBJECT=tactycal; else SUBJECT=3fs-talam; fi; sed -i'' -e "s/BINTRAY_SUBJECT/${SUBJECT}/" descriptor.json
+
+deploy:
+  # "production" deploy
+  - provider: bintray
+    user: talam3fs
+    key: $BINTRAY_API_KEY
+    file: descriptor.json
+    skip_cleanup: true
+    on:
+      go: 1.7.5
+      tags: true
+
+  # "staging" deploy
+  - provider: bintray
+    user: talam3fs
+    key: $BINTRAY_API_KEY
+    file: descriptor.json
+    skip_cleanup: true
+    on:
+      go: 1.7.5
+      branch: master
