@@ -1,48 +1,47 @@
-# Tactycal
+# Tactycal ![alt "build status"](https://travis-ci.org/tactycal/agent.svg?branch=master "build status")
 
-@todo abstract
+Tactycal agent is a tool for collecting details about the machine and a list of installed packages. The data is then submitted to Tactycal API where it's matched with a list of known issues and vulnerabilities.
 
 ## Installation
 
 ### Prebuilt binaries
 
-Please visit ["Download agent"](https://beta.tactycal.com/agents) section in Tactycal for detailed instructions how to install the agent on your system.
+Please visit ["Download agent"](https://beta.tactycal.com/agents) section in Tactycal for detailed instructions on how to install the agent on your system.
 
 ### Building from source
 
-As the agent needs to work on different different Linux distributions the development environment heavily relies on Docker to be able to run the code inside a valid Linux environment.
+* [GNU Make](https://www.gnu.org/software/make/)
+* [Golang (1.7+)](https://www.golang.org/)
+* [Docker](https://www.docker.com/)
+* [Docker Compose](https://docs.docker.com/compose/)
 
-This also means it's not required to checkout the code a properly setup go environment.
-
-Requirements:
-* make
-* docker
-* docker-compose
+Execute following to get the source:
 
 ```
-$ git clone github.com/tactycal/agent
-$ cd agent
-$ make test # run unit tests for all supported environments
-$ make test/redhat # run unit tests for redhat only
-$ make up/centos # start the agent on centos environment
-$ make build/ubuntu # builds the agent for ubuntu environemnt
+$ go get github.com/tactycal/agent          # checkout the code
+$ cd $GOPATH/src/github.com/tactycal/agent  # move to the directory
+$ make                                      # list all supported targets
 ```
 
-You can run `make help` to get a list of all supported make targets.
-
-#### Running tests locally
-
-Additional requirements:
-* go (1.7+)
-
-If you work on mac and don't want to wait slightly longer for unit tests to be executed inside a docker container you should clone the repo inside your `$GOPATH/src` folder:
+The most important targets:
 
 ```
-$ go get github.com/tactycal/agent/...
-$ cd $GOPATH/src/github.com/tactycal/agent
-$ make testLocal
-$ make testLocal/debian
+$ make test                  # runs unit tests for all supported distributions
+$ make test/<distribution>   # runs unit tests for a specific distribution
+$ make build                 # builds agents for all distributions
+$ make build/<distribution>  # builds agents for all distributions
+$ make up                    # starts agents in all distributions
+$ make up/<distribution>     # starts agent for specific distribution
 ```
+
+Currently supported distributions are:
+
+* centos
+* debian
+* rhel
+* ubuntu
+
+Run `make` or `make help` for a list of all supported targets.
 
 ## Configuration
 
@@ -54,19 +53,23 @@ $ tactycal -f your_config.conf
 
 Following configuration options are available:
 
-* `token` - required API token used for authentication and authorization
-* `uri` - optional full API endpoint, defaults to `https://api.tactycal.com/v1` (should be used for development only)
-* `labels` - optional list of comma separated values that will be stored together with your host (you can also use environment variables, ex: `$SERVER_ROLE`)
-* `proxy` - optional URL of the proxy server
-* `timeout` - set timeout for calls to Tactycal's API (check [golang's documentation](https://golang.org/pkg/time/#ParseDuration) for notation)
-* `state` - path to file where client's authentication state will be stored
+| Option    | Required | Description |
+|:----------|:---------|:------------|
+| `token`   | Yes      | token used for authentication and authorization |
+| `uri`     | No       | full API endpoint, defaults to `https://api.tactycal.com/v1` (should be used for development only) |
+| `labels`  | No       | list of comma separated values that will be stored together with your host (you can also use environment variables, ex: `$SERVER_ROLE`) |
+| `proxy`   | No       | URL of the proxy server |
+| `timeout` | No       | set timeout for calls to Tactycal's API (check [Go's documentation](https://golang.org/pkg/time/#ParseDuration) for notation) |
+| `state`   | No       | path to file where client's authentication state will be stored |
 
 ## Running the agent
 
-Additional command line arguments can be set when running tactycal:
+Additional command line arguments can be set when running Tactycal:
 
-* `-f string` use a configuration file (default "/opt/tactycal/etc/agent.conf")
-* `-q` output only important information
-* `-s string` Path to where tactycal can write it's state (default "/opt/tactycal/var/state")
-* `-t duration` client timeout for request in seconds (default 3s)
-* `-v` print version and exit
+| Argument      | Default                    | Description |
+|:--------------|:---------------------------|:------------|
+| `-f string`   | `/etc/tactycal/agent.conf` | use a configuration file |
+| `-d`          |  `false`                   | output debug information |
+| `-s string`   | `/var/opt/tactycal/state`  | path to where Tactycal can write its state |
+| `-t duration` |  `3s`                      | client timeout for request in seconds (check [Go's documentation](https://golang.org/pkg/time/#ParseDuration) for notation) |
+| `-v`          |                            | print version and exit |
