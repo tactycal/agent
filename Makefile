@@ -18,6 +18,7 @@ JFROG_PACKAGE  ?= agent
 
 PATH_BIN ?= /usr/bin
 
+.DEFAULT_GOAL := help
 .PHONY: help vendor
 
 all: format vet build test
