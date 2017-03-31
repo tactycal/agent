@@ -1,4 +1,4 @@
-// +build ubuntu opensuse
+// +build ubuntu opensuse amzn
 
 package main
 
@@ -50,6 +50,33 @@ func TestGetHostRelease(t *testing.T) {
 				&readFileStub{path: "/etc/SuSE-release", output: []byte("openSUSE 42.2 (x86_64)\nVERSION = 42.2\nCODENAME = Malachite\n")},
 			},
 			expected: "42.2",
+		},
+		{
+			title: "amzn os-release (amzn 2017.03)",
+			stubs: []ioStub{
+				&readFileStub{path: "/etc/os-release", output: []byte("VERSION_ID=\"2017.03\"")},
+			},
+			expected: "2017.03",
+		},
+		{
+			title: "amzn lsb_release (amzn 2017.03)",
+			stubs: []ioStub{
+				&readFileStub{path: "/etc/os-release", err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, output: []byte("Release:        2017.03")},
+			},
+			expected: "2017.03",
+		},
+		{
+			title: "amzn system-release (amzn 2017.03)",
+			stubs: []ioStub{
+				&readFileStub{path: "/etc/os-release", err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
+				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
+				&readFileStub{path: "/etc/redhat-release", err: ohNoErr},
+				&readFileStub{path: "/etc/SuSE-release", err: ohNoErr},
+				&readFileStub{path: "/etc/system-release", output: []byte("Amazon Linux AMI release 2017.03")},
+			},
+			expected: "2017.03",
 		},
 	}
 

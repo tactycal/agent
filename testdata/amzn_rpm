@@ -1,0 +1,15 @@
+Name: make
+Arch: x86_64
+Version: 3.82
+Release: 21.10.amzn1
+Vendor: Amazon.com
+Source: make-3.82-21.10.amzn1.src.rpm
+Epoch: 1
+
+Name: libverto
+Arch: x86_64
+Version: 0.2.5
+Release: 4.9
+Vendor: unknown
+Source: libverto-0.2.5-4.9.src.rpm
+Epoch: (none)

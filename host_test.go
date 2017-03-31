@@ -138,6 +138,19 @@ func TestReadHostRelease(t *testing.T) {
 			output: "SUSE_RELEASE",
 		},
 		{
+			title: "amzn_release",
+			stubs: []ioStub{
+				&readFileStub{path: "/etc/os-release", err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
+				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
+				&readFileStub{path: "/etc/redhat-release", err: ohNoErr},
+				&readFileStub{path: "/etc/SuSE-release", err: ohNoErr},
+				&readFileStub{path: "/etc/system-release", output: []byte("AMZN_RELEASE")},
+			},
+			output: "AMZN_RELEASE",
+		},
+
+		{
 			title: "default",
 			stubs: []ioStub{
 				&readFileStub{path: "/etc/os-release", err: ohNoErr},
@@ -145,6 +158,7 @@ func TestReadHostRelease(t *testing.T) {
 				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
 				&readFileStub{path: "/etc/redhat-release", err: ohNoErr},
 				&readFileStub{path: "/etc/SuSE-release", err: ohNoErr},
+				&readFileStub{path: "/etc/system-release", err: ohNoErr},
 			},
 			output: "unknown",
 		},

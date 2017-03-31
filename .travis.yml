@@ -12,6 +12,7 @@ env:
   - DISTRIBUTION=rhel
   - DISTRIBUTION=opensuse
   - DISTRIBUTION=sles
+  - DISTRIBUTION=amzn
 
 script: make test/$DISTRIBUTION
 

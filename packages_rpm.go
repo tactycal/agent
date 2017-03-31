@@ -1,4 +1,4 @@
-// +build opensuse sles
+// +build opensuse sles amzn
 
 package main
 

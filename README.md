@@ -42,6 +42,7 @@ Currently supported distributions are:
 * ubuntu
 * openSUSE
 * sles
+* amzn (Amazon Linux AMI)
 
 Run `make` or `make help` for a list of all supported targets.
 

@@ -52,7 +52,7 @@ func readHostRelease() string {
 	}
 
 	// distro specific
-	files := []string{"/etc/centos-release", "/etc/redhat-release", "/etc/SuSE-release"}
+	files := []string{"/etc/centos-release", "/etc/redhat-release", "/etc/SuSE-release", "/etc/system-release"}
 	for _, file := range files {
 		if content, err := readFile(file); err == nil {
 			return string(content)

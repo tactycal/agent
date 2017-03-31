@@ -1,4 +1,4 @@
-// +build ubuntu opensuse
+// +build ubuntu opensuse amzn
 
 package main
 

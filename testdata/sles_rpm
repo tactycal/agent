@@ -6,7 +6,6 @@ Vendor: SUSE LLC <https://www.suse.com/>
 Source: libtasn1-3.7-12.2.src.rpm
 Epoch: (none)
 
-
 Name: logrotate
 Arch: x86_64
 Version: 3.8.7

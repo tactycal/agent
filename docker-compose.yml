@@ -51,3 +51,11 @@ services:
     build:
       dockerfile: Dockerfile.sles
     command: make run/sles
+  
+  agentamzn:
+    extends:
+      file: docker-compose.tmpl
+      service: agent
+    build:
+      dockerfile: Dockerfile.amzn
+    command: make run/amzn
