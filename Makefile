@@ -8,7 +8,7 @@ CI_COMMIT     ?= dev
 GIT_COMMIT    := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
 VERSION       ?= $(shell cat ./VERSION)
 FLAGS         := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
-DISTRIBUTIONS := ubuntu debian rhel centos
+DISTRIBUTIONS := ubuntu debian rhel centos opensuse sles
 
 JFROG_URL      ?= https://bintray.com/api/v1
 JFROG_API_KEY  ?= THE_KEY
@@ -59,11 +59,18 @@ run/%:
 $(PKGDIR): $(addprefix $(PKGDIR)/,$(DISTRIBUTIONS)) ## creates artifacts for all distributions
 
 # PACKAGING
+$(PKGDIR)/sles: TARGET_ARTIFACT=rpm
+$(PKGDIR)/sles: FPM_DEPENDENCIES=zypper
+$(PKGDIR)/sles: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
+$(PKGDIR)/opensuse: TARGET_ARTIFACT=rpm
+$(PKGDIR)/opensuse: FPM_DEPENDENCIES=zypper
+$(PKGDIR)/opensuse: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
 $(PKGDIR)/rhel: FPM_DEPENDENCIES=yum
-$(PKGDIR)/centos: FPM_DEPENDENCIES=yum
 $(PKGDIR)/rhel: TARGET_ARTIFACT=rpm
 $(PKGDIR)/rhel: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
+$(PKGDIR)/centos: FPM_DEPENDENCIES=yum
 $(PKGDIR)/centos: TARGET_ARTIFACT=rpm
+$(PKGDIR)/centos: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
 $(PKGDIR)/%: FPM_DEPENDENCIES=apt
 $(PKGDIR)/%: TARGET_ARTIFACT=deb
 $(PKGDIR)/%: TARGET_FILE=tactycal-agent_$(VERSION)_amd64.deb

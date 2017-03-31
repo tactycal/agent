@@ -1,4 +1,4 @@
-// +build ubuntu debian
+// +build ubuntu opensuse
 
 package main
 

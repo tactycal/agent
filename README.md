@@ -40,6 +40,8 @@ Currently supported distributions are:
 * debian
 * rhel
 * ubuntu
+* openSUSE
+* sles
 
 Run `make` or `make help` for a list of all supported targets.
 

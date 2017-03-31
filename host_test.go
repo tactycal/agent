@@ -29,7 +29,11 @@ func TestGetHostInfo(t *testing.T) {
 func TestGetHostFqdn(t *testing.T) {
 	s := newStubs(t,
 		&cmdStub{cmd: "hostname", args: []string{"-f"}, output: []byte("HOST")},
-		&cmdStub{cmd: "hostname", args: []string{"-f"}, err: ohNoErr})
+		&cmdStub{cmd: "hostname", args: []string{"-f"}, err: ohNoErr},
+		&readFileStub{path: "/etc/hostname", output: []byte("HOST")},
+		&cmdStub{cmd: "hostname", args: []string{"-f"}, err: ohNoErr},
+		&readFileStub{path: "/etc/hostname", err: ohNoErr},
+	)
 	defer s.Close()
 
 	// 01: all good
@@ -37,7 +41,12 @@ func TestGetHostFqdn(t *testing.T) {
 		t.Errorf("Expected \"host\"; got %s", out)
 	}
 
-	// 02: set default
+	// 02: file
+	if out := getHostFqdn(); out != "HOST" {
+		t.Errorf("Expected \"host\"; got %s", out)
+	}
+
+	// 03: set default
 	if out := getHostFqdn(); out != "unknown" {
 		t.Errorf("Expected \"unknown\"; got %s", out)
 	}
@@ -94,7 +103,7 @@ func TestReadHostRelease(t *testing.T) {
 			title: "lsb_release",
 			stubs: []ioStub{
 				&readFileStub{path: "/etc/os-release", err: ohNoErr},
-				&cmdStub{cmd: "lsb_release", args: []string{"-sd"}, output: []byte("LSB_RELEASE")},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, output: []byte("LSB_RELEASE")},
 			},
 			output: "LSB_RELEASE",
 		},
@@ -102,7 +111,7 @@ func TestReadHostRelease(t *testing.T) {
 			title: "centos_release",
 			stubs: []ioStub{
 				&readFileStub{path: "/etc/os-release", output: []byte{}},
-				&cmdStub{cmd: "lsb_release", args: []string{"-sd"}, err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
 				&readFileStub{path: "/etc/centos-release", output: []byte("CENTOS_RELEASE")},
 			},
 			output: "CENTOS_RELEASE",
@@ -111,19 +120,31 @@ func TestReadHostRelease(t *testing.T) {
 			title: "redhat_release",
 			stubs: []ioStub{
 				&readFileStub{path: "/etc/os-release", err: ohNoErr},
-				&cmdStub{cmd: "lsb_release", args: []string{"-sd"}, err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
 				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
 				&readFileStub{path: "/etc/redhat-release", output: []byte("REDHAT_RELEASE")},
 			},
 			output: "REDHAT_RELEASE",
 		},
 		{
+			title: "suse_release",
+			stubs: []ioStub{
+				&readFileStub{path: "/etc/os-release", err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
+				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
+				&readFileStub{path: "/etc/redhat-release", err: ohNoErr},
+				&readFileStub{path: "/etc/SuSE-release", output: []byte("SUSE_RELEASE")},
+			},
+			output: "SUSE_RELEASE",
+		},
+		{
 			title: "default",
 			stubs: []ioStub{
 				&readFileStub{path: "/etc/os-release", err: ohNoErr},
-				&cmdStub{cmd: "lsb_release", args: []string{"-sd"}, err: ohNoErr},
+				&cmdStub{cmd: "lsb_release", args: []string{"-r"}, err: ohNoErr},
 				&readFileStub{path: "/etc/centos-release", err: ohNoErr},
 				&readFileStub{path: "/etc/redhat-release", err: ohNoErr},
+				&readFileStub{path: "/etc/SuSE-release", err: ohNoErr},
 			},
 			output: "unknown",
 		},

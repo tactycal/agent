@@ -1,4 +1,4 @@
-// +build rhel centos
+// +build rhel centos debian
 
 package main
 
@@ -8,6 +8,7 @@ var releaseRE = regexp.MustCompile("(\\d+)(\\.\\d+)?")
 
 func getHostRelease() string {
 	matches := releaseRE.FindStringSubmatch(readHostRelease())
+
 	if len(matches) > 0 {
 		return matches[1]
 	}

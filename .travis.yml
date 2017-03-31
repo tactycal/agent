@@ -10,6 +10,8 @@ env:
   - DISTRIBUTION=debian
   - DISTRIBUTION=centos
   - DISTRIBUTION=rhel
+  - DISTRIBUTION=opensuse
+  - DISTRIBUTION=sles
 
 script: make test/$DISTRIBUTION
 

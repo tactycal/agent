@@ -28,6 +28,11 @@ func getHostFqdn() string {
 	if out, err := execCommand("hostname", "-f"); err == nil {
 		return string(out)
 	}
+
+	if out, err := readFile("/etc/hostname"); err == nil {
+		return string(out)
+	}
+
 	return "unknown"
 }
 
@@ -42,12 +47,12 @@ func readHostRelease() string {
 	}
 
 	// fallback to LSB
-	if release, err := execCommand("lsb_release", "-sd"); err == nil {
+	if release, err := execCommand("lsb_release", "-r"); err == nil {
 		return string(release)
 	}
 
 	// distro specific
-	files := []string{"/etc/centos-release", "/etc/redhat-release"}
+	files := []string{"/etc/centos-release", "/etc/redhat-release", "/etc/SuSE-release"}
 	for _, file := range files {
 		if content, err := readFile(file); err == nil {
 			return string(content)
