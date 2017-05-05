@@ -2,7 +2,7 @@ language: go
 
 go:
 - 1.7.5
-- 1.8rc3
+- 1.8.1
 
 env:
   matrix:
@@ -14,7 +14,7 @@ env:
 script: make test/$DISTRIBUTION
 
 before_install:
-  - sudo apt-get -qa update
+  - sudo apt-get -q update
   - sudo apt-get install -y make gcc rpm
 
 before_deploy:
@@ -33,7 +33,7 @@ deploy:
     file: descriptor.json
     skip_cleanup: true
     on:
-      go: 1.7.5
+      go: 1.8.1
       tags: true
 
   # "staging" deploy
@@ -43,5 +43,12 @@ deploy:
     file: descriptor.json
     skip_cleanup: true
     on:
-      go: 1.7.5
+      go: 1.8.1
       branch: master
+
+  # "simulated" deploy
+  - provider: script
+    script: ls -laR .
+    on:
+      branch: deploy
+      go: 1.8.1
