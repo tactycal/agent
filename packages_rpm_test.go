@@ -1,4 +1,4 @@
-// +build sles opensuse
+// +build sles opensuse rhel centos
 
 package main
 

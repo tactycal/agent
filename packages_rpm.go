@@ -1,4 +1,4 @@
-// +build opensuse sles amzn
+// +build opensuse sles amzn rhel centos
 
 package main
 

@@ -44,19 +44,20 @@ func TestBuildVersion(t *testing.T) {
 
 func TestBuildPckage(t *testing.T) {
 	testCase := map[string]string{
-		"Name":      "NetworkManager-config-server",
-		"Arch":      "x86_64",
-		"Epoch":     "1",
-		"Version":   "0.9.9.1",
-		"Release":   "13.git20140326.4dba720.el7",
-		"From repo": "local",
+		"Name":    "NetworkManager-config-server",
+		"Arch":    "x86_64",
+		"Epoch":   "1",
+		"Version": "0.9.9.1",
+		"Release": "13.git20140326.4dba720.el7",
+		"Vendor":  "local",
 	}
 
 	expectedResult := &Package{
 		Name:         "NetworkManager-config-server",
 		Version:      "1:0.9.9.1-13.git20140326.4dba720.el7",
 		Architecture: "x86_64",
-		Official:     true,
+		Official:     false,
+		Source:       "unknown",
 	}
 
 	result := buildPackage(testCase)
@@ -67,7 +68,8 @@ func TestBuildPckage(t *testing.T) {
 
 func TestReadPackages(t *testing.T) {
 	s := newStubs(t,
-		&cmdStub{cmd: "yum", args: []string{"info", "installed"}, stubFile: "testdata/rhel_yum"}, // 0.1
+		&cmdStub{cmd: "rpm", args: []string{`-qa`, `--queryformat`,
+			`Name: %{NAME}\nArch: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`}, stubFile: "testdata/rhel_rpm"}, // 0.1
 		&cmdStub{err: ohNoErr}) // 0.2
 	defer s.Close()
 
@@ -77,13 +79,15 @@ func TestReadPackages(t *testing.T) {
 			Name:         "NetworkManager-config-server",
 			Version:      "1:0.9.9.1-13.git20140326.4dba720.el7",
 			Architecture: "x86_64",
-			Official:     true,
+			Official:     false,
+			Source:       "NetworkManager",
 		},
 		&Package{
 			Name:         "Red_Hat_Enterprise_Linux-Release_Notes-7-en-US",
 			Architecture: "noarch",
 			Version:      "0-2.el7",
-			Official:     false,
+			Official:     true,
+			Source:       "Red_Hat_Enterprise_Linux-Release_Notes-7-en-US",
 		},
 	}
 
@@ -99,7 +103,7 @@ func TestReadPackages(t *testing.T) {
 		t.Errorf("Result\n%+v\ndoesn't match expected\n%+v\n", result, expectedResult)
 	}
 
-	// 0.2 expected error from apt-cache
+	// 0.2 expected error from rpm
 	result, err = readPackages()
 
 	// check error

@@ -11,10 +11,7 @@ func buildPackage(matches map[string]string) *Package {
 		Name:         matches["Name"],
 		Version:      buildVersion(matches),
 		Architecture: matches["Arch"],
-		Official:     isOfficial(matches["From repo"]),
+		Official:     matches["Vendor"] == "CentOS",
+		Source:       getSourceName(matches),
 	}
-}
-
-func isOfficial(fromRepo string) bool {
-	return fromRepo == "CentOS" || fromRepo == "Updates" || fromRepo == "base"
 }

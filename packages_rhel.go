@@ -11,6 +11,7 @@ func buildPackage(matches map[string]string) *Package {
 		Name:         matches["Name"],
 		Version:      buildVersion(matches),
 		Architecture: matches["Arch"],
-		Official:     matches["From repo"] == "local",
+		Official:     matches["Vendor"] == "Red Hat, Inc.",
+		Source:       getSourceName(matches),
 	}
 }

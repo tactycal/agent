@@ -26,7 +26,7 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.rhel
-    command: go run -tags rhel client.go config.go host.go host_rhel.go log.go main.go packages.go packages_rhel.go packages_yum.go state.go version.go -f my_conf.conf -s .state/rhel -t 3s -d
+    command: go run -tags rhel client.go config.go host.go host_rhel.go log.go main.go packages.go packages_rhel.go packages_rpm.go state.go version.go -f my_conf.conf -s .state/rhel -t 3s -d
 
   agentcentos:
     extends:
