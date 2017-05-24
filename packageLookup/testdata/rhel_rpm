@@ -1,0 +1,14 @@
+Name: NetworkManager-config-server
+Architecture: x86_64
+Epoch: 1
+Version: 0.9.9.1
+Release: 13.git20140326.4dba720.el7
+Source: NetworkManager-0.9.9.1-13.git20140326.4dba720.el7.src.rpm
+Vendor: local
+
+Name: Red_Hat_Enterprise_Linux-Release_Notes-7-en-US
+Architecture: noarch
+Version: 0
+Release: 2.el7
+Vendor: Red Hat, Inc.
+Source: Red_Hat_Enterprise_Linux-Release_Notes-7-en-US-0-2.el7.src.rpm

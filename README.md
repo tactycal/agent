@@ -26,12 +26,10 @@ $ make                                      # list all supported targets
 The most important targets:
 
 ```
-$ make test                  # runs unit tests for all supported distributions
-$ make test/<distribution>   # runs unit tests for a specific distribution
-$ make build                 # builds agents for all distributions
-$ make build/<distribution>  # builds agents for all distributions
-$ make up                    # starts agents in all distributions
-$ make up/<distribution>     # starts agent for specific distribution
+$ make test                      # runs unit tests
+$ make build                     # builds agent 
+$ make up                        # starts agents in all distributions
+$ make up/<distribution>         # starts agent for specific distribution
 ```
 
 Currently supported distributions are:

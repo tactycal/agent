@@ -1,6 +1,7 @@
 package main
 
 import (
+	"agent/packageLookup"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -94,9 +95,9 @@ func TestAuthenticate_CloseConn(t *testing.T) {
 
 func TestSendPackageList_Ok(t *testing.T) {
 	expectedReqBody := &SendPackagesRequestBody{
-		Host: Host{Fqdn: "Fqdn"},
-		Package: []*Package{
-			&Package{
+		Host: &Host{Fqdn: "Fqdn"},
+		Package: []*packageLookup.Package{
+			&packageLookup.Package{
 				Name: "Package",
 			},
 		},
@@ -178,7 +179,7 @@ func TestSendPackageList_InvalidToken(t *testing.T) {
 		uri:   ts.URL,
 	}
 
-	err := client.SendPackageList([]*Package{})
+	err := client.SendPackageList([]*packageLookup.Package{})
 
 	if err == nil {
 		t.Error("Expected err to not be nil")
@@ -242,7 +243,7 @@ func TestSendPackageList_ExpiredToken(t *testing.T) {
 		token: "token",
 	}
 
-	err := client.SendPackageList([]*Package{})
+	err := client.SendPackageList([]*packageLookup.Package{})
 
 	if err == nil {
 		t.Error("Expected err to not be nil")

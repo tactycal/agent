@@ -1,0 +1,44 @@
+[
+  {
+    "title": "ubuntu lsb",
+    "content": "Distributor ID: Ubuntu \n Release:    14.04",
+    "expectedDistribution": "ubuntu",
+    "expectedRelease": "14.04"
+  },
+  {
+    "title": "centos lsb",
+    "content": "Distributor ID: CentOS \n Release:    7.3.1611",
+    "expectedDistribution": "centos",
+    "expectedRelease": "7"
+  },
+  {
+    "title": "redhat lsb",
+    "content": "Distributor ID: RedHatEnterpriseServer \n Release:    7.3",
+    "expectedDistribution": "rhel",
+    "expectedRelease": "7.3"
+  },
+  {
+    "title": "openSuSE lsb",
+    "content": "Distributor ID: openSUSE project \n Release:    42.2",
+    "expectedDistribution": "opensuse",
+    "expectedRelease": "42.2"
+  },
+  {
+    "title": "sles lsb",
+    "content": "Distributor ID: SUSE \n Release:    12.2",
+    "expectedDistribution": "sles",
+    "expectedRelease": "12.2"
+  },
+  {
+    "title": "amazon lsb",
+    "content": "Distributor ID: AmazonAMI \n Release:    2017.03",
+    "expectedDistribution": "amzn",
+    "expectedRelease": "2017.03"
+  },
+  {
+    "title": "debian lsb",
+    "content": "Distributor ID: Debian \n Release:    8.7",
+    "expectedDistribution": "debian",
+    "expectedRelease": "8"
+  }
+]

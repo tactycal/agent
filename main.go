@@ -1,6 +1,7 @@
 package main
 
 import (
+	"agent/packageLookup"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -30,13 +31,18 @@ func main() {
 		log.Fatalf("Failed to read configuration; err = %v", err)
 	}
 
-	packages, err := GetPackages()
+	host, err := GetHostInfo()
+	if err != nil {
+		log.Fatalf("Failed to get host info; err = %v", err)
+	}
+
+	packages, err := packageLookup.Get(host.Distribution)
 	if err != nil {
 		log.Fatalf("Failed to fetch a list of installed packages; err = %v", err)
 	}
 	log.Debugf("Found %d installed packages", len(packages))
 
-	client := NewClient(config, GetHostInfo(), NewState(*statePath), *clientTimeout)
+	client := NewClient(config, host, NewState(*statePath), *clientTimeout)
 	if err := client.SendPackageList(packages); err != nil {
 		log.Fatalf("Failed to submit list of installed packages; err = %v", err)
 	}

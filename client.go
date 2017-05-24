@@ -1,6 +1,7 @@
 package main
 
 import (
+	"agent/packageLookup"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -17,7 +18,7 @@ const (
 
 type Client struct {
 	token    string
-	host     Host
+	host     *Host
 	uri      string
 	proxyUrl *url.URL
 	state    *State
@@ -25,8 +26,8 @@ type Client struct {
 }
 
 type SendPackagesRequestBody struct {
-	Host
-	Package []*Package `json:"packages"`
+	*Host
+	Package []*packageLookup.Package `json:"packages"`
 }
 
 type ResponseErrorCode struct {
@@ -37,7 +38,7 @@ type Token struct {
 	Token string `json:"token"`
 }
 
-func NewClient(cfg *Config, host Host, state *State, timeout time.Duration) *Client {
+func NewClient(cfg *Config, host *Host, state *State, timeout time.Duration) *Client {
 	// copy labels from config to host
 	host.Labels = cfg.Labels
 
@@ -78,7 +79,7 @@ func (c *Client) Authenticate() (string, error) {
 	return rspData.Token, nil
 }
 
-func (c *Client) SendPackageList(packages []*Package) error {
+func (c *Client) SendPackageList(packages []*packageLookup.Package) error {
 	token, err := c.getToken()
 	if err != nil {
 		return err

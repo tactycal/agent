@@ -1,36 +1,38 @@
-// +build debian ubuntu
-
-package main
+package packageLookup
 
 import (
 	"regexp"
 	"strings"
 )
 
-var (
-	dpkgStatusPath  = "/var/lib/dpkg/status"
-	sourcesListPath = "/etc/apt/sources.list"
+const (
+	dpkgStatusPath      = "/var/lib/dpkg/status"
+	sourcesListPath     = "/etc/apt/sources.list"
+	aptMaintainerUbuntu = "(ubuntu.com|canonical.com|debian.org)"
+	aptPatchUbuntu      = "-[\\d\\.]+ubuntu[\\d\\.~]+$"
+	aptMaintainerDebian = "debian.org"
+	aptPatchDebian      = "\\+deb\\d+u\\d+$"
 )
 
-func GetPackages() ([]*Package, error) {
+// returns packages for distribution using a APT package manager
+func getApt(aptMaintainer, aptPatch string) ([]*Package, error) {
 	// read status of all installed packages
 	data, err := readFile(dpkgStatusPath)
 	if err != nil {
-		log.Warning("Unable to open %s, aborting.", dpkgStatusPath)
 		return nil, err
 	}
-
-	result := []*Package{}
-	officialMap := map[string]*Package{}
 
 	// split content by double newline to get separate packages
 	packages := strings.Split(string(data), "\n\n")
 
+	result := []*Package{}
+	officialMap := map[string]*Package{}
+	// pattern for all key=value would be "([a-zA-Z-]+): ?(.*)"
+	reKV := regexp.MustCompile("(Status|Package|Version|Architecture|Source|Maintainer): (.*)")
 	// iterate through packages and collect the data
 	for _, pkg := range packages {
 		// pattern for all key=value would be "([a-zA-Z-]+): ?(.*)"
-		pattern := "(Status|Package|Version|Architecture|Source|Maintainer): (.*)"
-		m := regexp.MustCompile(pattern).FindAllStringSubmatch(pkg, -1)
+		m := reKV.FindAllStringSubmatch(pkg, -1)
 
 		// convertc matches to a map
 		matches := make(map[string]string)
@@ -43,7 +45,7 @@ func GetPackages() ([]*Package, error) {
 				Name:         matches["Package"],
 				Version:      matches["Version"],
 				Architecture: matches["Architecture"],
-				Maintainer:   matches["Maintainer"],
+				maintainer:   matches["Maintainer"],
 				Source:       extractPackageNameFromSource(matches["Source"]),
 			}
 			result = append(result, pkg)
@@ -52,14 +54,14 @@ func GetPackages() ([]*Package, error) {
 	}
 
 	// check for official packages
-	if err := setOfficial(officialMap); err != nil {
+	if err := setOfficialApt(regexp.MustCompile(aptMaintainer), regexp.MustCompile(aptPatch), officialMap); err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func setOfficial(officialMap map[string]*Package) error {
+func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, officialMap map[string]*Package) error {
 	// get "official" repositories
 	officialRepos, err := getRepositoriesFromSourcesList()
 	if err != nil {
@@ -83,7 +85,7 @@ func setOfficial(officialMap map[string]*Package) error {
 		}
 
 		// 2. check maintainer
-		if aptMaintainerRe.MatchString(pkg.Maintainer) {
+		if aptMaintainerRe.MatchString(pkg.maintainer) {
 			pkg.Official = true
 			continue
 		}
@@ -121,7 +123,6 @@ func getRepositoriesFromSourcesList() ([]string, error) {
 	// Collect all "official" repositories from /etc/apt/sources.list
 	data, err := readFile(sourcesListPath)
 	if err != nil {
-		log.Warningf("Unable to open %s aborting", sourcesListPath)
 		return nil, err
 	}
 

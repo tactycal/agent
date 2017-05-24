@@ -1,0 +1,68 @@
+[
+  {
+    "title": "ubuntu issue",
+    "content": "Ubuntu 14.04.5 LTS ",
+    "expectedDistribution": "ubuntu",
+    "expectedRelease": "14.04"
+  },
+  {
+    "title": "centos release",
+    "content": "CentOS Linux release 7.3.1611 (Core)",
+    "expectedDistribution": "centos",
+    "expectedRelease": "7"
+  },
+  {
+    "title": "centos system release",
+    "content": "CentOS Linux release 7.3.1611 (Core)",
+    "expectedDistribution": "centos",
+    "expectedRelease": "7"
+  },
+  {
+    "title": "centos system release cpe",
+    "content": "cpe:/o:centos:centos:7",
+    "expectedDistribution": "centos",
+    "expectedRelease": "7"
+  },
+  {
+    "title": "redhat release",
+    "content": "Red Hat Enterprise Linux Server release 7.3 (Maipo)",
+    "expectedDistribution": "rhel",
+    "expectedRelease": "7.3"
+  },
+  {
+    "title": "redhat system release",
+    "content": "Red Hat Enterprise Linux Server release 7.3 (Maipo)",
+    "expectedDistribution": "rhel",
+    "expectedRelease": "7.3"
+  },
+  {
+    "title": "redhat system release cpe",
+    "content": "cpe:/o:redhat:enterprise_linux:7.3:ga:server",
+    "expectedDistribution": "rhel",
+    "expectedRelease": "7.3"
+  },
+  {
+    "title": "openSuSE release",
+    "content": "openSUSE 42.2 (x86_64), \n VERSION = 42.2 \n CODENAME = Malachite",
+    "expectedDistribution": "opensuse",
+    "expectedRelease": "42.2"
+  },
+  {
+    "title": "sles release",
+    "content": "SUSE Linux Enterprise Server 12 (x86_64) \n VERSION = 12 \n PATCHLEVEL = 2 \n # This file is deprecated and will be",
+    "expectedDistribution": "sles",
+    "expectedRelease": "12.2"
+  },
+  {
+    "title": "amazon system release",
+    "content": "Amazon Linux AMI release 2017.03",
+    "expectedDistribution": "amzn",
+    "expectedRelease": "2017.03"
+  },
+  {
+    "title": "amazon system release cpe",
+    "content": "cpe:/o:amazon:linux:2017.03:ga",
+    "expectedDistribution": "amzn",
+    "expectedRelease": "2017.03"
+  }
+]

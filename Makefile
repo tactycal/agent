@@ -9,6 +9,7 @@ GIT_COMMIT    := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
 VERSION       ?= $(shell cat ./VERSION)
 FLAGS         := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
 DISTRIBUTIONS := ubuntu debian rhel centos opensuse sles amzn
+PACKAGE_MANAGER := dpkg rpm
 
 JFROG_URL      ?= https://bintray.com/api/v1
 JFROG_API_KEY  ?= THE_KEY
@@ -33,51 +34,35 @@ clean: ## cleans up the repository
 	/bin/rm -rf $(PKGDIR)
 	/bin/rm -rf $(DATADIR)
 
-build: $(addprefix build/,$(DISTRIBUTIONS)) ## builds the code for all distributions
-
-test: $(addprefix test/,$(DISTRIBUTIONS)) ## runs tests for all distributions
-
-test/%: TEST_FLAGS ?= -v
-test/%: vet ## runs unit tests for a specific distribution
-	@echo "*\n* Testing for $* locally \n*"
-	go test $(TEST_FLAGS) -tags $*
+test: vet 
+	go test -v
+	$(MAKE) -C osDiscovery test
+	$(MAKE) -C packageLookup test
 
 format: ## formats the code
 	gofmt -w $(SOURCE)
 
 vet: ## examines the go code with `go vet`
-	go vet $(SOURCE)
+	go vet
 
 up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
 up/%: ## starts the agent for a specific distribution
 	docker-compose --project-name=tactycal up agent$*
 
 run/%:
-	$(GO) build -tags $* -ldflags $(FLAGS) -o ./bin/tactycal-$*
+	$(GO) build  -ldflags $(FLAGS) -o ./bin/tactycal-$*
 	./bin/tactycal-$* -f my_conf.conf -s /state/$* -t 3s -d
 
-$(PKGDIR): $(addprefix $(PKGDIR)/,$(DISTRIBUTIONS)) ## creates artifacts for all distributions
+$(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_MANAGER)) ## creates artifacts for all distributions
 
 # PACKAGING
-$(PKGDIR)/sles: TARGET_ARTIFACT=rpm
-$(PKGDIR)/sles: FPM_DEPENDENCIES=zypper
-$(PKGDIR)/sles: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/opensuse: TARGET_ARTIFACT=rpm
-$(PKGDIR)/opensuse: FPM_DEPENDENCIES=zypper
-$(PKGDIR)/opensuse: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/rhel: FPM_DEPENDENCIES=yum
-$(PKGDIR)/rhel: TARGET_ARTIFACT=rpm
-$(PKGDIR)/rhel: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/centos: FPM_DEPENDENCIES=yum
-$(PKGDIR)/centos: TARGET_ARTIFACT=rpm
-$(PKGDIR)/centos: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/amzn: FPM_DEPENDENCIES=yum
-$(PKGDIR)/amzn: TARGET_ARTIFACT=rpm
-$(PKGDIR)/amzn: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/%: FPM_DEPENDENCIES=apt
-$(PKGDIR)/%: TARGET_ARTIFACT=deb
-$(PKGDIR)/%: TARGET_FILE=tactycal-agent_$(VERSION)_amd64.deb
-$(PKGDIR)/%: build/% ## creates the artifact for a specific distribution
+$(PKGDIR)/rpm: TARGET_ARTIFACT=rpm
+$(PKGDIR)/rpm: FPM_DEPENDENCIES=rpm
+$(PKGDIR)/rpm: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
+$(PKGDIR)/dpkg: TARGET_ARTIFACT=deb
+$(PKGDIR)/dpkg: FPM_DEPENDENCIES=apt
+$(PKGDIR)/dpkg: TARGET_FILE=tactycal-agent_$(VERSION)_amd64.deb
+$(PKGDIR)/%: build ## creates the artifact for a specific distribution
 	mkdir -p $(PKGDIR)/$*
 	fpm -s dir -t $(TARGET_ARTIFACT) \
 		--name tactycal-agent \
@@ -101,14 +86,14 @@ $(PKGDIR)/%: build/% ## creates the artifact for a specific distribution
 		--before-remove ./scripts/before-remove.sh \
 		--after-upgrade ./scripts/after-upgrade.sh \
 		--before-upgrade ./scripts/before-upgrade.sh \
-		./build/$*/=/
+		./build/=/
 
 # BUILD
-build/%: ;## builds the code for a specific distribution
-$(BUILDDIR)/%:
+build: ;## builds the code for a specific distribution
+$(BUILDDIR):
 	mkdir -p $@$(PATH_BIN)
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -a -installsuffix cgo \
-		-tags $* -ldflags $(FLAGS) -o $@$(PATH_BIN)/tactycal
+		 -ldflags $(FLAGS) -o $@$(PATH_BIN)/tactycal
 
 vendor: ## update vendor folder
 	docker run --rm -v $(PWD):/go/src/agent -w /go/src/agent trifs/govendor fetch +missing
