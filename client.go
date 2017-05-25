@@ -1,13 +1,14 @@
 package main
 
 import (
-	"agent/packageLookup"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/tactycal/agent/packageLookup"
 )
 
 const (

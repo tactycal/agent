@@ -1,6 +1,6 @@
 package main
 
-import "agent/osDiscovery"
+import "github.com/tactycal/agent/osDiscovery"
 
 type Host struct {
 	Fqdn         string   `json:"fqdn"`

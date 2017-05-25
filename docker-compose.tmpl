@@ -4,7 +4,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.debian
-    working_dir: /go/src/agent
+    working_dir: /go/src/github.com/tactycal/agent
     volumes:
-      - ./:/go/src/agent
+      - ./:/go/src/github.com/tactycal/agent
       - .//.state/:/state/

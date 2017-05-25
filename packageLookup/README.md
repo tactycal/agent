@@ -20,7 +20,7 @@ package main
 
 import (
      "fmt"
-     "github.com/tactycal/packageLookup"
+     "github.com/tactycal/agent/packageLookup"
 )
 
 func main() {

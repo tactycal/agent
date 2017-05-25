@@ -17,11 +17,15 @@ package main
 
 import (
      "fmt"
-     "github.com/tactycal/osDiscovery"
+     "github.com/tactycal/agent/osDiscovery"
 )
 
 func main() {
-    osInfo := osDiscovery.Get()
-    fmt.Printf("%+v\n", osInfo)
+    osInfo, err := osDiscovery.Get()
+    if err != nil {
+        fmt.Println(err)
+    } else {
+        fmt.Printf("%+v\n", osInfo)
+    }
 }
 ```

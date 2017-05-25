@@ -89,8 +89,7 @@ $(PKGDIR)/%: build ## creates the artifact for a specific distribution
 		./build/=/
 
 # BUILD
-build: ;## builds the code for a specific distribution
-$(BUILDDIR):
+build: ;## builds the code
 	mkdir -p $@$(PATH_BIN)
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -a -installsuffix cgo \
 		 -ldflags $(FLAGS) -o $@$(PATH_BIN)/tactycal

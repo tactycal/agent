@@ -1,12 +1,13 @@
 package main
 
 import (
-	"agent/packageLookup"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
+
+	"github.com/tactycal/agent/packageLookup"
 )
 
 func main() {

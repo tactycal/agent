@@ -1,7 +1,6 @@
 package main
 
 import (
-	"agent/packageLookup"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +10,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/tactycal/agent/packageLookup"
 )
 
 func TestAuthenticate_Ok(t *testing.T) {
