@@ -35,15 +35,13 @@ clean: ## cleans up the repository
 	/bin/rm -rf $(DATADIR)
 
 test: vet 
-	go test -v
-	$(MAKE) -C osDiscovery test
-	$(MAKE) -C packageLookup test
+	go test -v ./...
 
 format: ## formats the code
 	gofmt -w $(SOURCE)
 
 vet: ## examines the go code with `go vet`
-	go vet
+	go vet ./...
 
 up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
 up/%: ## starts the agent for a specific distribution
