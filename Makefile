@@ -47,9 +47,9 @@ up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
 up/%: ## starts the agent for a specific distribution
 	docker-compose --project-name=tactycal up agent$*
 
-run/%:
-	$(GO) build  -ldflags $(FLAGS) -o ./bin/tactycal-$*
-	./bin/tactycal-$* -f my_conf.conf -s /state/$* -t 3s -d
+run:
+	$(GO) build  -ldflags $(FLAGS) -o ./bin/tactycal
+	./bin/tactycal -f my_conf.conf -s /state/agnet_state -t 3s -d
 
 $(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_MANAGER)) ## creates artifacts for all distributions
 

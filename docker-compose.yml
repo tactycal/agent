@@ -6,7 +6,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.debian
-    command: make run/debian
     environment:
       - LABEL=debianenv
 
@@ -16,7 +15,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.ubuntu
-    command: make run/ubuntu
     environment:
       - LABEL=ubuntuenv
 
@@ -26,7 +24,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.rhel
-    command: go run -tags rhel client.go config.go host.go  log.go main.go state.go version.go -f my_conf.conf -s .state/rhel -t 3s -d
 
   agentcentos:
     extends:
@@ -34,7 +31,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.centos
-    command: make run/centos
   
   agentopensuse:
     extends:
@@ -42,7 +38,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.opensuse
-    command: make run/opensuse
 
   agentsles:
     extends:
@@ -50,7 +45,6 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.sles
-    command: make run/sles
   
   agentamzn:
     extends:
@@ -58,4 +52,3 @@ services:
       service: agent
     build:
       dockerfile: Dockerfile.amzn
-    command: make run/amzn

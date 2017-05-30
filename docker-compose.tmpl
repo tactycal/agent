@@ -5,6 +5,7 @@ services:
       context: ./
       dockerfile: Dockerfile.debian
     working_dir: /go/src/github.com/tactycal/agent
+    command: make run
     volumes:
       - ./:/go/src/github.com/tactycal/agent
       - .//.state/:/state/
