@@ -1,14 +1,14 @@
 GO     := go
 SOURCE := $(wildcard ./*.go)
 
-BUILDDIR      := ./build
-PKGDIR        := ./pkg
-DATADIR       := ./data
-CI_COMMIT     ?= dev
-GIT_COMMIT    := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
-VERSION       ?= $(shell cat ./VERSION)
-FLAGS         := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
-DISTRIBUTIONS := ubuntu debian rhel centos opensuse sles amzn
+BUILDDIR        := ./build
+PKGDIR          := ./pkg
+DATADIR         := ./data
+CI_COMMIT       ?= dev
+GIT_COMMIT      := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
+VERSION         ?= $(shell cat ./VERSION)
+FLAGS           := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
+DISTRIBUTIONS   := ubuntu debian rhel centos opensuse sles amzn
 PACKAGE_MANAGER := dpkg rpm
 
 JFROG_URL      ?= https://bintray.com/api/v1
