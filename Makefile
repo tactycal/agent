@@ -34,7 +34,7 @@ clean: ## cleans up the repository
 	/bin/rm -rf $(PKGDIR)
 	/bin/rm -rf $(DATADIR)
 
-test: vet 
+test: vet ## runs unit tests 
 	go test -v ./...
 
 format: ## formats the code
