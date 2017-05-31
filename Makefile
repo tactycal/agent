@@ -44,12 +44,8 @@ vet: ## examines the go code with `go vet`
 	go vet ./...
 
 up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
-up/%: ## starts the agent for a specific distribution
+up/%: build ## starts the agent for a specific distribution
 	docker-compose --project-name=tactycal up agent$*
-
-run:
-	$(GO) build  -ldflags $(FLAGS) -o ./bin/tactycal
-	./bin/tactycal -f my_conf.conf -s /state/agnet_state -t 3s -d
 
 $(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_TYPE)) ## creates artifacts for all distributions
 
