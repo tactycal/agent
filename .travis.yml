@@ -6,8 +6,8 @@ go:
 
 env:
   matrix:
-  - PACKAGE_MANAGER=dpkg
-  - PACKAGE_MANAGER=rpm
+  - PACKAGE_TYPE=deb
+  - PACKAGE_TYPE=rpm
 
 script: make test
 
@@ -17,8 +17,8 @@ before_install:
 
 before_deploy:
   - gem install fpm --no-document
-  - VERSION=${TRAVIS_TAG:=$(cat ./VERSION)} make pkg/$PACKAGE_MANAGER
-  - sed -i'' -e "s/\PACKAGE_MANAGER/${PACKAGE_MANAGER}/" descriptor.json
+  - VERSION=${TRAVIS_TAG:=$(cat ./VERSION)} make pkg/$PACKAGE_TYPE
+  - sed -i'' -e "s/\PACKAGE_TYPE/${PACKAGE_TYPE}/" descriptor.json
   - sed -i'' -e "s/\VERSION/${TRAVIS_TAG:=$(cat ./VERSION)}/" descriptor.json
   - sed -i'' -e "s/\DATE/$(date +%Y-%m-%d)/" descriptor.json
   - if [ $TRAVIS_TAG ]; then SUBJECT=tactycal; else SUBJECT=3fs-talam; fi; sed -i'' -e "s/BINTRAY_SUBJECT/${SUBJECT}/" descriptor.json

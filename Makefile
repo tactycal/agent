@@ -9,7 +9,7 @@ GIT_COMMIT      := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
 VERSION         ?= $(shell cat ./VERSION)
 FLAGS           := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
 DISTRIBUTIONS   := ubuntu debian rhel centos opensuse sles amzn
-PACKAGE_MANAGER := dpkg rpm
+PACKAGE_TYPE    := deb rpm
 
 JFROG_URL      ?= https://bintray.com/api/v1
 JFROG_API_KEY  ?= THE_KEY
@@ -51,15 +51,15 @@ run:
 	$(GO) build  -ldflags $(FLAGS) -o ./bin/tactycal
 	./bin/tactycal -f my_conf.conf -s /state/agnet_state -t 3s -d
 
-$(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_MANAGER)) ## creates artifacts for all distributions
+$(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_TYPE)) ## creates artifacts for all distributions
 
 # PACKAGING
 $(PKGDIR)/rpm: TARGET_ARTIFACT=rpm
 $(PKGDIR)/rpm: FPM_DEPENDENCIES=rpm
 $(PKGDIR)/rpm: TARGET_FILE=tactycal-agent-$(VERSION)-x86_64.rpm
-$(PKGDIR)/dpkg: TARGET_ARTIFACT=deb
-$(PKGDIR)/dpkg: FPM_DEPENDENCIES=apt
-$(PKGDIR)/dpkg: TARGET_FILE=tactycal-agent_$(VERSION)_amd64.deb
+$(PKGDIR)/deb: TARGET_ARTIFACT=deb
+$(PKGDIR)/deb: FPM_DEPENDENCIES=apt
+$(PKGDIR)/deb: TARGET_FILE=tactycal-agent_$(VERSION)_amd64.deb
 $(PKGDIR)/%: build ## creates the artifact for a specific distribution
 	mkdir -p $(PKGDIR)/$*
 	fpm -s dir -t $(TARGET_ARTIFACT) \

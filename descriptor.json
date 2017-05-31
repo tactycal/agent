@@ -1,7 +1,7 @@
 {
     "package": {
         "name": "agent",
-        "repo": "DISTRIBUTION",
+        "repo": "PACKAGE_TYPE",
         "subject": "BINTRAY_SUBJECT"
     },
 
@@ -14,7 +14,7 @@
     },
 
     "files": [{
-        "includePattern": "pkg/DISTRIBUTION/(.*(deb|rpm))",
+        "includePattern": "pkg/PACKAGE_TYPE/(.*(deb|rpm))",
         "uploadPattern": "$1",
         "matrixParams": {
             "deb_distribution": "tactycal",
