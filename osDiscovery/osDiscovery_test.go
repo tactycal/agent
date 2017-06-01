@@ -3,19 +3,21 @@ package osDiscovery
 import (
 	"reflect"
 	"testing"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 func TestGet(t *testing.T) {
-	s := newStubs(t,
-		&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/centos-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/SuSE-release", Output: []byte("SUSE Linux Enterprise\nVERSION = 12\nPATCHLEVEL = 0\n# This file is d")},
-		&cmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
-		&cmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
-		&cmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
+	s := stubUtils.NewStubs(t,
+		&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/centos-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/SuSE-release", Output: []byte("SUSE Linux Enterprise\nVERSION = 12\nPATCHLEVEL = 0\n# This file is d")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
 	)
 	defer s.Close()
 
@@ -34,14 +36,14 @@ func TestGet(t *testing.T) {
 	}
 
 	// 2: unknown distribution
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/centos-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/SuSE-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/system-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/system-release-cpe", Err: ohNoErr},
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/centos-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/SuSE-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/system-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/system-release-cpe", Err: stubUtils.OhNoErr},
 	)
 
 	_, err := Get()
@@ -52,12 +54,12 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetDistributionRelease(t *testing.T) {
-	s := newStubs(t)
+	s := stubUtils.NewStubs(t)
 	defer s.Close()
 
 	// 1: os-release
 	// 1.1: all good
-	s.Add(&readFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"\nHOME_URL=\"http://www.ubuntu.com/\"")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"\nHOME_URL=\"http://www.ubuntu.com/\"")})
 
 	distribution, release, _ := GetDistributionRelease()
 	if distribution != "ubuntu" {
@@ -68,7 +70,7 @@ func TestGetDistributionRelease(t *testing.T) {
 	}
 
 	// 1.2: unknown distribution
-	s.Add(&readFileStub{Path: "/etc/os-release", Output: []byte("\nID_LIKE=debian\nVERSION_ID=\"14.04\"\nHOME_URL=\"http://www.ubuntu.com/\"")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("\nID_LIKE=debian\nVERSION_ID=\"14.04\"\nHOME_URL=\"http://www.ubuntu.com/\"")})
 
 	_, _, err := GetDistributionRelease()
 	if err != ErrUnknownDistribution {
@@ -76,7 +78,7 @@ func TestGetDistributionRelease(t *testing.T) {
 	}
 
 	// 1.3: unknown release
-	s.Add(&readFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nHOME_URL=\"http://www.ubuntu.com/\"")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nHOME_URL=\"http://www.ubuntu.com/\"")})
 
 	_, _, err = GetDistributionRelease()
 	if err != ErrUnknownRelease {
@@ -85,8 +87,8 @@ func TestGetDistributionRelease(t *testing.T) {
 
 	// 2: lsbFallback
 	// 2.1: all good
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Distributor ID: RedHatEnterpriseServer\nRelease:    7.3")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Distributor ID: RedHatEnterpriseServer\nRelease:    7.3")})
 
 	distribution, release, _ = GetDistributionRelease()
 	if distribution != "rhel" {
@@ -97,8 +99,8 @@ func TestGetDistributionRelease(t *testing.T) {
 	}
 
 	// 2.2: unknown distribution
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Missing ID: RedHatEnterpriseServer\nRelease:    7.3")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Missing ID: RedHatEnterpriseServer\nRelease:    7.3")})
 
 	_, _, err = GetDistributionRelease()
 	if err != ErrUnknownDistribution {
@@ -106,8 +108,8 @@ func TestGetDistributionRelease(t *testing.T) {
 	}
 
 	// 2.3: unknown release
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Distributor ID: RedHatEnterpriseServer\nMissing:    7.3")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Output: []byte("Description:    Red Hat \n Distributor ID: RedHatEnterpriseServer\nMissing:    7.3")})
 
 	_, _, err = GetDistributionRelease()
 	if err != ErrUnknownRelease {
@@ -116,9 +118,9 @@ func TestGetDistributionRelease(t *testing.T) {
 
 	// 3: distribution specific
 	// 3.1: all good
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/issue", Output: []byte("Debian GNU/Linux 8 \n \\l")})
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/issue", Output: []byte("Debian GNU/Linux 8 \n \\l")})
 
 	distribution, release, _ = GetDistributionRelease()
 	if distribution != "debian" {
@@ -129,14 +131,14 @@ func TestGetDistributionRelease(t *testing.T) {
 	}
 
 	// 3.2: unknown
-	s.Add(&readFileStub{Path: "/etc/os-release", Err: ohNoErr},
-		&cmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/centos-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/SuSE-release", Err: ohNoErr},
-		&readFileStub{Path: "/etc/system-release", Output: []byte("unknown 8 \n \\l")},
-		&readFileStub{Path: "/etc/system-release-cpe", Err: ohNoErr},
+	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr},
+		&stubUtils.CmdStub{Cmd: "lsb_release", Args: []string{"-ir"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/issue", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/centos-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/redhat-release", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/SuSE-release", Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/system-release", Output: []byte("unknown 8 \n \\l")},
+		&stubUtils.ReadFileStub{Path: "/etc/system-release-cpe", Err: stubUtils.OhNoErr},
 	)
 
 	_, _, err = GetDistributionRelease()
@@ -146,34 +148,34 @@ func TestGetDistributionRelease(t *testing.T) {
 }
 
 func TestGetFqdn(t *testing.T) {
-	s := newStubs(t)
+	s := stubUtils.NewStubs(t)
 	defer s.Close()
 
 	// 1: all good
-	s.Add(&cmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("HOST")})
+	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("HOST")})
 	if out, _ := GetFqdn(); out != "HOST" {
 		t.Errorf("Expected \"host\"; got %s", out)
 	}
 
 	// 2: file
-	s.Add(&cmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/hostname", Output: []byte("HOST")})
+	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/hostname", Output: []byte("HOST")})
 	if out, _ := GetFqdn(); out != "HOST" {
 		t.Errorf("Expected \"host\"; got %s", out)
 	}
 
 	// 3: unknown
-	s.Add(&cmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: ohNoErr},
-		&readFileStub{Path: "/etc/hostname", Err: ohNoErr})
+	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: stubUtils.OhNoErr},
+		&stubUtils.ReadFileStub{Path: "/etc/hostname", Err: stubUtils.OhNoErr})
 	if _, err := GetFqdn(); err != ErrUnknownFqdn {
 		t.Errorf("Expected error \"%s\"; got %s", ErrUnknownFqdn.Error(), err.Error())
 	}
 }
 
 func TestGetArchitecture(t *testing.T) {
-	s := newStubs(t,
-		&cmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
-		&cmdStub{Cmd: "uname", Args: []string{"-m"}, Err: ohNoErr})
+	s := stubUtils.NewStubs(t,
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Err: stubUtils.OhNoErr})
 	defer s.Close()
 
 	// 1: all good
@@ -188,9 +190,9 @@ func TestGetArchitecture(t *testing.T) {
 }
 
 func TestGetKernel(t *testing.T) {
-	s := newStubs(t,
-		&cmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
-		&cmdStub{Cmd: "uname", Args: []string{"-r"}, Err: ohNoErr})
+	s := stubUtils.NewStubs(t,
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Err: stubUtils.OhNoErr})
 	defer s.Close()
 
 	// 1: all good

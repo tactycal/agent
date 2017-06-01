@@ -3,6 +3,8 @@ package packageLookup
 import (
 	"regexp"
 	"strings"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 const (
@@ -17,7 +19,7 @@ const (
 // returns packages for distribution using a APT package manager
 func getApt(aptMaintainer, aptPatch string) ([]*Package, error) {
 	// read status of all installed packages
-	data, err := readFile(dpkgStatusPath)
+	data, err := stubUtils.ReadFile(dpkgStatusPath)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +123,7 @@ func extractPackageNameFromSource(source string) string {
 // official repositories.
 func getRepositoriesFromSourcesList() ([]string, error) {
 	// Collect all "official" repositories from /etc/apt/sources.list
-	data, err := readFile(sourcesListPath)
+	data, err := stubUtils.ReadFile(sourcesListPath)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +158,7 @@ func getRepositoriesFromSourcesList() ([]string, error) {
 func getAptCachePolicy(packages []string) (map[string][]string, error) {
 	// Call `apt-cache policy pkg1 pkg2 ...` to collect possible package sources.
 	args := append([]string{"policy"}, packages...)
-	output, err := execCommand("apt-cache", args...)
+	output, err := stubUtils.ExecCommand("apt-cache", args...)
 	if err != nil {
 		return nil, err
 	}

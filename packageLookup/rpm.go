@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 const (
@@ -16,7 +18,7 @@ const (
 
 // returns packages for distribution using a RPM package manager
 func getRpm(rpmVendor string) ([]*Package, error) {
-	b, err := execCommand(`rpm`, `-qa`, `--queryformat`, `Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`)
+	b, err := stubUtils.ExecCommand(`rpm`, `-qa`, `--queryformat`, `Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`)
 
 	if err != nil {
 		return nil, err

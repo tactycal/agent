@@ -12,7 +12,11 @@
 // will be returned.
 package osDiscovery
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/tactycal/agent/stubUtils"
+)
 
 // OsInfo contains information about the operating system.
 type OsInfo struct {
@@ -72,19 +76,19 @@ func GetDistributionRelease() (string, string, error) {
 	var err error
 
 	// os-release
-	if out, err = readFile("/etc/os-release"); err == nil {
+	if out, err = stubUtils.ReadFile("/etc/os-release"); err == nil {
 		distribution, release := getValues("ID=", "VERSION_ID=", string(out))
 		return checkDistributionReleaseValue(distribution, release)
 	}
 
 	// fallback to LSB
-	if out, err = execCommand("lsb_release", "-ir"); err == nil {
+	if out, err = stubUtils.ExecCommand("lsb_release", "-ir"); err == nil {
 		return parseLsbReleaseContent(string(out))
 	}
 
 	// distro specific
 	for _, f := range distributionSpecificFiles {
-		if out, err = readFile(f); err == nil {
+		if out, err = stubUtils.ReadFile(f); err == nil {
 			distribution, release, err := parseSpecificFileContent(string(out))
 			if err == nil {
 				return distribution, release, nil
@@ -97,7 +101,7 @@ func GetDistributionRelease() (string, string, error) {
 
 // GetArchitecture returns a machine hardware name.
 func GetArchitecture() (string, error) {
-	if out, err := execCommand("uname", "-m"); err == nil {
+	if out, err := stubUtils.ExecCommand("uname", "-m"); err == nil {
 		return string(out), nil
 	}
 	return "", ErrUnknownArchitecture
@@ -105,7 +109,7 @@ func GetArchitecture() (string, error) {
 
 // GetKernel returns a kernel release.
 func GetKernel() (string, error) {
-	if out, err := execCommand("uname", "-r"); err == nil {
+	if out, err := stubUtils.ExecCommand("uname", "-r"); err == nil {
 		return string(out), nil
 	}
 	return "", ErrUnknownKernel
@@ -113,11 +117,11 @@ func GetKernel() (string, error) {
 
 // GetFqdn returns the fully qualified domain name (FQDN).
 func GetFqdn() (string, error) {
-	if out, err := execCommand("hostname", "-f"); err == nil {
+	if out, err := stubUtils.ExecCommand("hostname", "-f"); err == nil {
 		return string(out), nil
 	}
 
-	if out, err := readFile("/etc/hostname"); err == nil {
+	if out, err := stubUtils.ReadFile("/etc/hostname"); err == nil {
 		return string(out), nil
 	}
 

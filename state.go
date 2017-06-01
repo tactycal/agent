@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"os"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 const DefaultStatePath = "/var/opt/tactycal/state"
@@ -26,7 +28,7 @@ func NewState(path string) *State {
 
 func (s *State) read() error {
 	// try to read existing state
-	b, err := readFile(s.statePath)
+	b, err := stubUtils.ReadFile(s.statePath)
 	if err != nil {
 		return err
 	}
@@ -47,7 +49,7 @@ func (s *State) save() error {
 	}
 
 	// write data to file
-	if err := writeFile(s.statePath, b, 0600); err != nil {
+	if err := stubUtils.WriteFile(s.statePath, b, 0600); err != nil {
 		return err
 	}
 

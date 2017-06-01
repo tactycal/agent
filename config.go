@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 const (
@@ -77,7 +79,7 @@ func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, er
 }
 
 func readConfigurationFromFile(file string) (map[string]string, error) {
-	data, err := readFile(file)
+	data, err := stubUtils.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}

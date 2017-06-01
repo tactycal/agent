@@ -4,13 +4,15 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 func TestGetPackages(t *testing.T) {
-	s := newStubs(t,
-		&readFileStub{Path: "/var/lib/dpkg/status", StubFile: "testdata/ubuntu_status"},
-		&readFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
-		&cmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
+	s := stubUtils.NewStubs(t,
+		&stubUtils.ReadFileStub{Path: "/var/lib/dpkg/status", StubFile: "testdata/ubuntu_status"},
+		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
+		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
 	expectedResult := map[string]*Package{
@@ -103,8 +105,8 @@ func TestExtractPackageNameFromSource(t *testing.T) {
 }
 
 func TestGetRepositoriesFromSourcesList(t *testing.T) {
-	s := newStubs(t,
-		&readFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"})
+	s := stubUtils.NewStubs(t,
+		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"})
 	defer s.Close()
 
 	expectedResult := []string{
@@ -138,9 +140,9 @@ func TestOfficialMapToList(t *testing.T) {
 }
 
 func TestGetAptCachePolicy(t *testing.T) {
-	s := newStubs(t,
-		&cmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"}, // 0.1
-		&cmdStub{Cmd: "apt-cache", Err: ohNoErr})                          // 0.2
+	s := stubUtils.NewStubs(t,
+		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"}, // 0.1
+		&stubUtils.CmdStub{Cmd: "apt-cache", Err: stubUtils.OhNoErr})                // 0.2
 	defer s.Close()
 
 	testCase := []string{
@@ -253,9 +255,9 @@ func TestIsPackageSourceFromOfficialRepositories(t *testing.T) {
 }
 
 func TestSetOfficialApt(t *testing.T) {
-	s := newStubs(t,
-		&readFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
-		&cmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
+	s := stubUtils.NewStubs(t,
+		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
+		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
 	testCase := map[string]*Package{

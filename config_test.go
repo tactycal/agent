@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/tactycal/agent/stubUtils"
 )
 
 func TestNewConfig_Valid(t *testing.T) {
@@ -46,7 +48,7 @@ func TestNewConfig_Valid(t *testing.T) {
 
 	for _, fixture := range fixtures {
 		t.Run(fixture.title, func(t *testing.T) {
-			s := newStubs(t, &readFileStub{path: "path", output: fixture.data})
+			s := stubUtils.NewStubs(t, &stubUtils.ReadFileStub{Path: "path", Output: fixture.data})
 			defer s.Close()
 
 			// parse
@@ -90,11 +92,11 @@ func TestNewConfig_Errors(t *testing.T) {
 	for _, fixture := range fixtures {
 		t.Run(fixture.title, func(t *testing.T) {
 			// // create a temp file
-			s := newStubs(t)
+			s := stubUtils.NewStubs(t)
 			if bytes.Equal(fixture.data, []byte("missing")) {
-				s.Add(&readFileStub{err: ohNoErr})
+				s.Add(&stubUtils.ReadFileStub{Err: stubUtils.OhNoErr})
 			} else {
-				s.Add(&readFileStub{output: fixture.data})
+				s.Add(&stubUtils.ReadFileStub{Output: fixture.data})
 			}
 
 			// parse

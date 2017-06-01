@@ -3,9 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
 
 	"github.com/tactycal/agent/packageLookup"
 )
@@ -47,16 +44,4 @@ func main() {
 	if err := client.SendPackageList(packages); err != nil {
 		log.Fatalf("Failed to submit list of installed packages; err = %v", err)
 	}
-}
-
-var readFile = func(path string) ([]byte, error) {
-	return ioutil.ReadFile(path)
-}
-
-var writeFile = func(filename string, data []byte, perm os.FileMode) error {
-	return ioutil.WriteFile(filename, data, perm)
-}
-
-var execCommand = func(cmd string, args ...string) ([]byte, error) {
-	return exec.Command(cmd, args...).Output()
 }
