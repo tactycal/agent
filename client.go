@@ -121,7 +121,9 @@ func (c *Client) SendPackageList(packages []*packageLookup.Package) error {
 		}
 
 		if errCode.Error == ErrorCodeInvalidToken {
-			c.state.Reset()
+			if err := c.state.Reset(); err != nil {
+				return err
+			}
 			return fmt.Errorf("Token was reported as invalid. Perhaps the host was deleted. New host ID will be assigned to this machine.")
 		}
 

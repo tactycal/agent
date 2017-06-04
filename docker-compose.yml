@@ -1,54 +1,61 @@
 version: "2"
 services:
   agentdebian:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.debian
+    image: debian:jessie
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/debian:/var/opt/tactycal/state
     environment:
       - LABEL=debianenv
 
   agentubuntu:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.ubuntu
+    image: ubuntu:latest
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/ubuntu:/var/opt/tactycal/state
     environment:
       - LABEL=ubuntuenv
 
   agentrhel:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.rhel
+    image: richxsl/rhel7
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/rhel:/var/opt/tactycal/state
 
   agentcentos:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.centos
-  
+    image: centos:7
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/centos:/var/opt/tactycal/state
+
   agentopensuse:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.opensuse
+    image: opensuse:42.2
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/opensuse:/var/opt/tactycal/state
 
   agentsles:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.sles
-  
+    image: gitlab.3fs.si:4567/tactycal/tactycal:sles12sp2
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/sles:/var/opt/tactycal/state
+
   agentamzn:
-    extends:
-      file: docker-compose.tmpl
-      service: agent
-    build:
-      dockerfile: Dockerfile.amzn
+    image: amazonlinux:2016.09
+    command: /usr/local/bin/tactycal -d
+    volumes:
+      - ./build/usr/bin/tactycal:/usr/local/bin/tactycal
+      - ./my_conf.conf:/etc/tactycal/agent.conf
+      - .state/amzn:/var/opt/tactycal/state

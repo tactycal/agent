@@ -1,4 +1,0 @@
-FROM sigscicmd/fpm-rpm
-
-COPY pkg /build
-COPY scripts /scripts

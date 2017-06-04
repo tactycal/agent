@@ -33,8 +33,9 @@ clean: ## cleans up the repository
 	/bin/rm -rf $(BUILDDIR)
 	/bin/rm -rf $(PKGDIR)
 	/bin/rm -rf $(DATADIR)
+	/bin/rm -rf ./.state
 
-test: vet ## runs unit tests 
+test: vet ## runs unit tests
 	go test -v ./...
 
 format: ## formats the code
@@ -45,6 +46,8 @@ vet: ## examines the go code with `go vet`
 
 up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
 up/%: build ## starts the agent for a specific distribution
+	mkdir -p .state
+	touch .state/$*
 	docker-compose --project-name=tactycal up agent$*
 
 $(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_TYPE)) ## creates artifacts for all distributions
