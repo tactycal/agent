@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/tactycal/agent/packageLookup"
@@ -13,8 +14,9 @@ import (
 
 const (
 	DefaultClientTimeout  = time.Second * 3
-	ErrorCodeExpiredToken = 10
-	ErrorCodeInvalidToken = 11
+	ErrorCodeExpiredToken = "TOKEN_EXPIRED"
+	ErrorCodeInvalidToken = "TOKEN_INVALID"
+	apiVersionPrefix      = "v2"
 )
 
 type Client struct {
@@ -32,7 +34,7 @@ type SendPackagesRequestBody struct {
 }
 
 type ResponseErrorCode struct {
-	Error int `json:"error"`
+	Error string `json:"error"`
 }
 
 type Token struct {
@@ -204,8 +206,11 @@ func (c *Client) apiRequest(method, endpoint, authorization string, input interf
 		}
 	}
 
+	// strip slashes from the beginning of the endpoint
+	endpoint = strings.TrimLeft(endpoint, "/")
+
 	// build the request
-	uri := fmt.Sprintf("%s%s", c.uri, endpoint)
+	uri := fmt.Sprintf("%s/%s/%s", c.uri, apiVersionPrefix, endpoint)
 	req, err := http.NewRequest(method, uri, body)
 	if err != nil {
 		return nil, err

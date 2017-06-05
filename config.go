@@ -14,7 +14,7 @@ import (
 
 const (
 	DefaultConfigurationFile = "/etc/tactycal/agent.conf"
-	DefaultApiUri            = "https://api.tactycal.com/v1"
+	DefaultApiUri            = "https://api.tactycal.com"
 )
 
 type Config struct {
@@ -35,6 +35,9 @@ func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, er
 	// set defaults
 	if cfg["uri"] == "" {
 		cfg["uri"] = DefaultApiUri
+	} else {
+		// trim trailing slashes
+		cfg["uri"] = strings.TrimRight(cfg["uri"], "/")
 	}
 
 	// @todo fix proxy handling

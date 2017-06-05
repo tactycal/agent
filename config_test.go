@@ -23,7 +23,7 @@ func TestNewConfig_Valid(t *testing.T) {
 			data:  []byte(`token=TOKEN`),
 			expected: &Config{
 				Token:         "TOKEN",
-				Uri:           "https://api.tactycal.com/v1",
+				Uri:           "https://api.tactycal.com",
 				Labels:        []string{},
 				StatePath:     "/default/path",
 				ClientTimeout: time.Second,
@@ -32,7 +32,7 @@ func TestNewConfig_Valid(t *testing.T) {
 		{
 			title: "full config",
 			data: []byte(`token=TOKEN
-			              uri=API_URL
+			              uri=API_URL/
 			              labels=$PATH,label
 			              timeout=10s
 			              state=/path/to/state`),
