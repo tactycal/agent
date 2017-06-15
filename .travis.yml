@@ -1,8 +1,9 @@
 language: go
 
 go:
-- 1.7.5
-- 1.8.1
+- 1.7.6
+- 1.8.3
+- 1.9beta2
 
 env:
   matrix:
@@ -22,6 +23,7 @@ before_deploy:
   - sed -i'' -e "s/\VERSION/${TRAVIS_TAG:=$(cat ./VERSION)}/" descriptor.json
   - sed -i'' -e "s/\DATE/$(date +%Y-%m-%d)/" descriptor.json
   - if [ $TRAVIS_TAG ]; then SUBJECT=tactycal; else SUBJECT=3fs-talam; fi; sed -i'' -e "s/BINTRAY_SUBJECT/${SUBJECT}/" descriptor.json
+  - if [ $TRAVIS_TAG ]; then SUBJECT=tactycal; else SUBJECT=3fs-talam; fi; echo "SUBJECT=${SUBJECT}"
 
 deploy:
   # "production" deploy
@@ -31,7 +33,7 @@ deploy:
     file: descriptor.json
     skip_cleanup: true
     on:
-      go: 1.8.1
+      go: 1.8.3
       tags: true
 
   # "staging" deploy
@@ -41,12 +43,12 @@ deploy:
     file: descriptor.json
     skip_cleanup: true
     on:
-      go: 1.8.1
+      go: 1.8.3
       branch: master
 
   # "simulated" deploy
   - provider: script
     script: ls -laR .
     on:
-      branch: deploy
-      go: 1.8.1
+      go: 1.8.3
+      all_branches: true
