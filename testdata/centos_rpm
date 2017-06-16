@@ -1,6 +1,0 @@
-Name: audit-libs
-Arch: x86_64
-Version: 2.3.7
-Release: 5.el6
-Vendor: CentOS
-Source: audit-2.6.5-3.el7_3.1.src.rpm
