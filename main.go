@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 
@@ -13,10 +14,17 @@ func main() {
 	debugMode := flag.Bool("d", false, "show debug messages")
 	statePath := flag.String("s", DefaultStatePath, "path to where tactycal can write its state")
 	clientTimeout := flag.Duration("t", DefaultClientTimeout, "client timeout for request in seconds")
+	localOutput := flag.Bool("l", false, "print host information and installed packages to standard output as json string and exit")
+
 	flag.Parse()
 
 	if *showVersion {
 		fmt.Printf("tactycal %s-%s\n", Version, GitCommit)
+		return
+	}
+
+	if *localOutput {
+		local()
 		return
 	}
 
@@ -44,4 +52,21 @@ func main() {
 	if err := client.SendPackageList(packages); err != nil {
 		log.Fatalf("Failed to submit list of installed packages; err = %v", err)
 	}
+}
+
+func local() {
+	host, err := GetHostInfo()
+	if err != nil {
+		fmt.Printf("Failed to get host info; err = %v", err)
+		return
+	}
+
+	packages, err := packageLookup.Get(host.Distribution)
+	if err != nil {
+		fmt.Printf("Failed to fetch a list of installed packages; err = %v", err)
+		return
+	}
+
+	b, _ := json.Marshal(&SendPackagesRequestBody{host, packages})
+	fmt.Println(string(b))
 }

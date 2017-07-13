@@ -11,6 +11,14 @@ FLAGS           := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
 DISTRIBUTIONS   := ubuntu debian rhel centos opensuse sles amzn
 PACKAGE_TYPE    := deb rpm
 
+IMAGE_amzn     := "amazonlinux:2016.09"
+IMAGE_debian   := "debian:jessie"
+IMAGE_ubuntu   := "ubuntu:latest"
+IMAGE_rhel     := "richxsl/rhel7"
+IMAGE_centos   := "centos:7"
+IMAGE_opensuse := "opensuse"
+IMAGE_sles     := "gitlab.3fs.si:4567/tactycal/tactycal:sles12sp2"
+
 JFROG_URL      ?= https://bintray.com/api/v1
 JFROG_API_KEY  ?= THE_KEY
 JFROG_USERNAME ?= USERNAME
@@ -49,6 +57,9 @@ up/%: build ## starts the agent for a specific distribution
 	mkdir -p .state
 	touch .state/$*
 	docker-compose --project-name=tactycal up agent$*
+
+uplocal/%: build ## starts the agent for a specific distribution and prints the information to standard output
+	@docker run --rm -it -v $(PWD)/build/usr/bin/tactycal:/usr/bin/tactycal $(IMAGE_$*) /usr/bin/tactycal -l
 
 $(PKGDIR): $(addprefix $(PKGDIR)/,$(PACKAGE_TYPE)) ## creates artifacts for all distributions
 
