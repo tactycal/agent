@@ -157,24 +157,32 @@ func TestGetFqdn(t *testing.T) {
 		t.Errorf("Expected \"host\"; got %s", out)
 	}
 
-	// 2: file
+	// 2: new line
+	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("HOST\n")})
+	if out, _ := GetFqdn(); out != "HOST" {
+		t.Errorf("Expected \"host\"; got %s", out)
+	}
+
+	// 3: file
 	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: stubUtils.OhNoErr},
 		&stubUtils.ReadFileStub{Path: "/etc/hostname", Output: []byte("HOST")})
 	if out, _ := GetFqdn(); out != "HOST" {
 		t.Errorf("Expected \"host\"; got %s", out)
 	}
 
-	// 3: unknown
+	// 4: unknown
 	s.Add(&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Err: stubUtils.OhNoErr},
 		&stubUtils.ReadFileStub{Path: "/etc/hostname", Err: stubUtils.OhNoErr})
 	if _, err := GetFqdn(); err != ErrUnknownFqdn {
 		t.Errorf("Expected error \"%s\"; got %s", ErrUnknownFqdn.Error(), err.Error())
 	}
+
 }
 
 func TestGetArchitecture(t *testing.T) {
 	s := stubUtils.NewStubs(t,
 		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH\n")},
 		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Err: stubUtils.OhNoErr})
 	defer s.Close()
 
@@ -183,25 +191,38 @@ func TestGetArchitecture(t *testing.T) {
 		t.Errorf("Expected \"arch\"; got %s", out)
 	}
 
-	// 2:  unknown
+	// 2: new line
+	if out, _ := GetArchitecture(); out != "ARCH" {
+		t.Errorf("Expected \"arch\"; got %s", out)
+	}
+
+	// 3:  unknown
 	if _, err := GetArchitecture(); err != ErrUnknownArchitecture {
 		t.Errorf("Expected error \"%s\"; got %s", ErrUnknownArchitecture.Error(), err.Error())
 	}
+
 }
 
 func TestGetKernel(t *testing.T) {
 	s := stubUtils.NewStubs(t,
 		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN\n")},
 		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Err: stubUtils.OhNoErr})
 	defer s.Close()
 
 	// 1: all good
 	if out, _ := GetKernel(); out != "KERN" {
-		t.Errorf("Expected \"arch\"; got %s", out)
+		t.Errorf("Expected \"kern\"; got %s", out)
 	}
 
-	// 2:  unknown
+	// 2: new line
+	if out, _ := GetKernel(); out != "KERN" {
+		t.Errorf("Expected \"kern\"; got %s", out)
+	}
+
+	// 3:  unknown
 	if _, err := GetKernel(); err != ErrUnknownKernel {
 		t.Errorf("Expected error \"%s\"; got %s", ErrUnknownKernel.Error(), err.Error())
 	}
+
 }

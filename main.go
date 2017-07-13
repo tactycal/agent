@@ -13,10 +13,22 @@ func main() {
 	debugMode := flag.Bool("d", false, "show debug messages")
 	statePath := flag.String("s", DefaultStatePath, "path to where tactycal can write its state")
 	clientTimeout := flag.Duration("t", DefaultClientTimeout, "client timeout for request in seconds")
+	localOutput := flag.Bool("l", false, "print host information and installed packages to standard output as json string and exit")
+
 	flag.Parse()
 
 	if *showVersion {
 		fmt.Printf("tactycal %s-%s\n", Version, GitCommit)
+		return
+	}
+
+	if *localOutput {
+		if s, err := local(); err != nil {
+			fmt.Printf("Failed to retrieved host information and installed packages; %s", err.Error())
+		} else {
+			fmt.Println(s)
+		}
+
 		return
 	}
 

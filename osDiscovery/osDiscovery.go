@@ -14,6 +14,7 @@ package osDiscovery
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/tactycal/agent/stubUtils"
 )
@@ -102,7 +103,7 @@ func GetDistributionRelease() (string, string, error) {
 // GetArchitecture returns a machine hardware name.
 func GetArchitecture() (string, error) {
 	if out, err := stubUtils.ExecCommand("uname", "-m"); err == nil {
-		return string(out), nil
+		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 	return "", ErrUnknownArchitecture
 }
@@ -110,7 +111,7 @@ func GetArchitecture() (string, error) {
 // GetKernel returns a kernel release.
 func GetKernel() (string, error) {
 	if out, err := stubUtils.ExecCommand("uname", "-r"); err == nil {
-		return string(out), nil
+		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 	return "", ErrUnknownKernel
 }
@@ -118,11 +119,11 @@ func GetKernel() (string, error) {
 // GetFqdn returns the fully qualified domain name (FQDN).
 func GetFqdn() (string, error) {
 	if out, err := stubUtils.ExecCommand("hostname", "-f"); err == nil {
-		return string(out), nil
+		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 
 	if out, err := stubUtils.ReadFile("/etc/hostname"); err == nil {
-		return string(out), nil
+		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 
 	return "", ErrUnknownFqdn

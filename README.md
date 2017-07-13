@@ -74,3 +74,4 @@ Additional command line arguments can be set when running Tactycal:
 | `-s string`   | `/var/opt/tactycal/state`  | path to where Tactycal can write its state |
 | `-t duration` |  `3s`                      | client timeout for request in seconds (check [Go's documentation](https://golang.org/pkg/time/#ParseDuration) for notation) |
 | `-v`          |                            | print version and exit |
+| `-l`          | `false`                    | print host information and installed packages to standard output as `json` string and exit |
