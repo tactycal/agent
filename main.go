@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 
@@ -24,7 +23,12 @@ func main() {
 	}
 
 	if *localOutput {
-		local()
+		if s, err := local(); err != nil {
+			fmt.Printf("Failed to retrieved host information and installed packages; %s", err.Error())
+		} else {
+			fmt.Println(s)
+		}
+
 		return
 	}
 
@@ -52,21 +56,4 @@ func main() {
 	if err := client.SendPackageList(packages); err != nil {
 		log.Fatalf("Failed to submit list of installed packages; err = %v", err)
 	}
-}
-
-func local() {
-	host, err := GetHostInfo()
-	if err != nil {
-		fmt.Printf("Failed to get host info; err = %v", err)
-		return
-	}
-
-	packages, err := packageLookup.Get(host.Distribution)
-	if err != nil {
-		fmt.Printf("Failed to fetch a list of installed packages; err = %v", err)
-		return
-	}
-
-	b, _ := json.Marshal(&SendPackagesRequestBody{host, packages})
-	fmt.Println(string(b))
 }
