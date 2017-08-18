@@ -69,7 +69,7 @@ func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, packages []*Pack
 	}
 
 	// collect package repositories
-	policy, err := getAptCachePolicy(getNameOfPackages(packages))
+	policy, err := getAptCachePolicy(getNamesOfPackages(packages))
 	if err != nil {
 		return err
 	}
@@ -100,8 +100,8 @@ func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, packages []*Pack
 	return nil
 }
 
-// getNameOfPackages returns the name of the packages
-func getNameOfPackages(packages []*Package) []string {
+// getNamesOfPackages returns the name of the packages
+func getNamesOfPackages(packages []*Package) []string {
 	list := []string{}
 	for _, pkg := range packages {
 		list = append(list, pkg.Name)

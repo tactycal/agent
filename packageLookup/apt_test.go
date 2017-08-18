@@ -115,7 +115,7 @@ func TestGetRepositoriesFromSourcesList(t *testing.T) {
 	}
 }
 
-func TestGetNameOfPackages(t *testing.T) {
+func TestgetNamesOfPackages(t *testing.T) {
 	testCase := []*Package{
 		&Package{
 			Name: "Package",
@@ -124,7 +124,7 @@ func TestGetNameOfPackages(t *testing.T) {
 
 	expectedResult := []string{"Package"}
 
-	result := getNameOfPackages(testCase)
+	result := getNamesOfPackages(testCase)
 
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Result\n%+v\ndoesn't match expected\n%+v\n", result, expectedResult)
