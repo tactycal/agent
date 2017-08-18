@@ -10,6 +10,18 @@ Version: 0.98.2-0ubuntu1
 Depends: libc6 (>= 2.4), libcairo2 (>= 1.2.4), libgdk-pixbuf2.0-0 (>= 2.22.0), libglib2.0-0 (>= 2.24.0), libgtk2.0-0 (>= 2.24.5-4), libpango1.0-0 (>= 1.14.0), libpixman-1-0 (>= 0.15.14)
 Suggests: murrine-themes (>= 0.98)
 
+Package: gtk2-engines-murrine
+Status: install ok installed
+Multi-Arch: same
+Priority: optional
+Section: x11
+Installed-Size: 330
+Maintainer: Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Version: 0.98.2-0ubuntu1
+Depends: libc6 (>= 2.4), libcairo2 (>= 1.2.4), libgdk-pixbuf2.0-0 (>= 2.22.0), libglib2.0-0 (>= 2.24.0), libgtk2.0-0 (>= 2.24.5-4), libpango1.0-0 (>= 1.14.0), libpixman-1-0 (>= 0.15.14)
+Suggests: murrine-themes (>= 0.98)
+
 Package: skype
 Status: install ok installed
 Priority: extra

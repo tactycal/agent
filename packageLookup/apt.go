@@ -16,7 +16,7 @@ const (
 	aptPatchDebian      = "\\+deb\\d+u\\d+$"
 )
 
-// returns packages for distribution using a APT package manager
+// getApt returns packages for distribution using a APT package manager
 func getApt(aptMaintainer, aptPatch string) ([]*Package, error) {
 	// read status of all installed packages
 	data, err := stubUtils.ReadFile(dpkgStatusPath)
@@ -28,7 +28,6 @@ func getApt(aptMaintainer, aptPatch string) ([]*Package, error) {
 	packages := strings.Split(string(data), "\n\n")
 
 	result := []*Package{}
-	officialMap := map[string]*Package{}
 	// pattern for all key=value would be "([a-zA-Z-]+): ?(.*)"
 	reKV := regexp.MustCompile("(Status|Package|Version|Architecture|Source|Maintainer): (.*)")
 	// iterate through packages and collect the data
@@ -51,19 +50,18 @@ func getApt(aptMaintainer, aptPatch string) ([]*Package, error) {
 				Source:       extractPackageNameFromSource(matches["Source"]),
 			}
 			result = append(result, pkg)
-			officialMap[matches["Package"]] = pkg
 		}
 	}
 
 	// check for official packages
-	if err := setOfficialApt(regexp.MustCompile(aptMaintainer), regexp.MustCompile(aptPatch), officialMap); err != nil {
+	if err := setOfficialApt(regexp.MustCompile(aptMaintainer), regexp.MustCompile(aptPatch), result); err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, officialMap map[string]*Package) error {
+func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, packages []*Package) error {
 	// get "official" repositories
 	officialRepos, err := getRepositoriesFromSourcesList()
 	if err != nil {
@@ -71,15 +69,15 @@ func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, officialMap map[
 	}
 
 	// collect package repositories
-	policy, err := getAptCachePolicy(officialMapToList(officialMap))
+	policy, err := getAptCachePolicy(getNamesOfPackages(packages))
 	if err != nil {
 		return err
 	}
 
 	// iterate over packages
-	for pkgName, pkg := range officialMap {
+	for _, pkg := range packages {
 		// 1. check the source
-		if sources, ok := policy[pkgName]; ok {
+		if sources, ok := policy[pkg.Name]; ok {
 			if isPackageSourceFromOfficialRepositories(sources, officialRepos) {
 				pkg.Official = true
 				continue
@@ -102,11 +100,11 @@ func setOfficialApt(aptMaintainerRe, aptPatchRe *regexp.Regexp, officialMap map[
 	return nil
 }
 
-// extract keys from the map of all packages
-func officialMapToList(officialMap map[string]*Package) []string {
+// getNamesOfPackages returns the name of the packages
+func getNamesOfPackages(packages []*Package) []string {
 	list := []string{}
-	for pkgName, _ := range officialMap {
-		list = append(list, pkgName)
+	for _, pkg := range packages {
+		list = append(list, pkg.Name)
 	}
 	return list
 }
