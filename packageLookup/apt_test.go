@@ -115,7 +115,7 @@ func TestGetRepositoriesFromSourcesList(t *testing.T) {
 	}
 }
 
-func TestgetNamesOfPackages(t *testing.T) {
+func TestGetNamesOfPackages(t *testing.T) {
 	testCase := []*Package{
 		&Package{
 			Name: "Package",
