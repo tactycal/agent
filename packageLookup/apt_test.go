@@ -15,36 +15,43 @@ func TestGetPackages(t *testing.T) {
 		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
-	expectedResult := map[string]*Package{
-		"gtk2-engines-murrine": &Package{
+	expectedResult := []*Package{
+		&Package{
 			Name:         "gtk2-engines-murrine",
 			Version:      "0.98.2-0ubuntu1",
 			Architecture: "i386",
 			maintainer:   "Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
 			Official:     true,
 		},
-		"skype": &Package{
+		&Package{
+			Name:         "gtk2-engines-murrine",
+			Version:      "0.98.2-0ubuntu1",
+			Architecture: "amd64",
+			maintainer:   "Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+			Official:     true,
+		},
+		&Package{
 			Name:         "skype",
 			Version:      "4.2.0.11-1",
 			Architecture: "i386",
 			maintainer:   "Skype Technologies <info@skype.net>",
 			Official:     false,
 		},
-		"apt": &Package{
+		&Package{
 			Name:         "apt",
 			Version:      "0.8.16~exp12ubuntu10.27",
 			maintainer:   "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
 			Architecture: "amd64",
 			Official:     true,
 		},
-		"oracle-java8-installer": &Package{
+		&Package{
 			Name:         "oracle-java8-installer",
 			Version:      "8u111+8u111arm-1~webupd8~0",
 			maintainer:   "Alin Andrei <webupd8@gmail.com>",
 			Architecture: "all",
 			Official:     false,
 		},
-		"apt-xapian-index": &Package{
+		&Package{
 			Name:         "apt-xapian-index",
 			Version:      "0.44ubuntu5.1",
 			maintainer:   "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
@@ -60,23 +67,8 @@ func TestGetPackages(t *testing.T) {
 		t.Errorf("Expected error to bi nil; got %v", err)
 	}
 
-	// check if numbers of packages match
-	if len(result) != len(expectedResult) {
-		t.Errorf("Number of packages %d doesn't match expected %d", len(result), len(expectedResult))
-	}
-
-	// check if packages match
-	for _, v := range result {
-		// check if expected result contain package
-		expectedV, ok := expectedResult[v.Name]
-		if !ok {
-			t.Errorf("Package %s is not expected", v.Name)
-			continue
-		}
-
-		if !reflect.DeepEqual(expectedV, v) {
-			t.Errorf("Result\n%+v\ndoesn't match expected\n%+v\n", v, expectedV)
-		}
+	if !reflect.DeepEqual(result, expectedResult) {
+		t.Errorf("Result\n%+v\ndoesn't match expected\n%+v\n", result, expectedResult)
 	}
 }
 
@@ -124,15 +116,15 @@ func TestGetRepositoriesFromSourcesList(t *testing.T) {
 }
 
 func TestOfficialMapToList(t *testing.T) {
-	testCase := map[string]*Package{
-		"Package": &Package{
+	testCase := []*Package{
+		&Package{
 			Name: "Package",
 		},
 	}
 
 	expectedResult := []string{"Package"}
 
-	result := officialMapToList(testCase)
+	result := getNameOfPackages(testCase)
 
 	if !reflect.DeepEqual(result, expectedResult) {
 		t.Errorf("Result\n%+v\ndoesn't match expected\n%+v\n", result, expectedResult)
@@ -260,14 +252,14 @@ func TestSetOfficialApt(t *testing.T) {
 		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
-	testCase := map[string]*Package{
-		"gtk2-engines-murrine": &Package{
+	testCase := []*Package{
+		&Package{
 			Name:         "gtk2-engines-murrine",
 			Version:      "0.98.2-0ubuntu1",
 			Architecture: "i386",
 			maintainer:   "Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
 		},
-		"skype": &Package{
+		&Package{
 			Name:         "skype",
 			Version:      "4.2.0.11-1",
 			Architecture: "i386",
@@ -275,15 +267,15 @@ func TestSetOfficialApt(t *testing.T) {
 		},
 	}
 
-	expectedResult := map[string]*Package{
-		"gtk2-engines-murrine": &Package{
+	expectedResult := []*Package{
+		&Package{
 			Name:         "gtk2-engines-murrine",
 			Version:      "0.98.2-0ubuntu1",
 			Architecture: "i386",
 			maintainer:   "Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
 			Official:     true,
 		},
-		"skype": &Package{
+		&Package{
 			Name:         "skype",
 			Version:      "4.2.0.11-1",
 			Architecture: "i386",
