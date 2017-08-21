@@ -83,6 +83,7 @@ $(PKGDIR)/%: build ## creates the artifact for a specific distribution
 		--before-remove ./scripts/before-remove.sh \
 		--after-upgrade ./scripts/after-upgrade.sh \
 		--before-upgrade ./scripts/before-upgrade.sh \
+		--rpm-sign \
 		./build/=/
 
 # BUILD

@@ -13,11 +13,15 @@ env:
 script: make test
 
 before_install:
+  - openssl aes-256-cbc -K $encrypted_745ec88b1183_key -iv $encrypted_745ec88b1183_iv -in priv.key.enc -out ./priv.key -d
   - sudo apt-get -q update
   - sudo apt-get install -y make gcc rpm
 
 before_deploy:
   - gem install fpm --no-document
+  - which gpg
+  - gpg --import priv.key
+  - echo "%_signature gpg\n%_gpg_path ~/.gnupg\n%_gpg_name Tactycal\n%_gpgbin /usr/bin/gpg" > ~/.rpmmacros
   - VERSION=${TRAVIS_TAG:=$(cat ./VERSION)} make pkg/$PACKAGE_TYPE
   - sed -i'' -e "s/\PACKAGE_TYPE/${PACKAGE_TYPE}/" descriptor.json
   - sed -i'' -e "s/\VERSION/${TRAVIS_TAG:=$(cat ./VERSION)}/" descriptor.json
@@ -37,18 +41,39 @@ deploy:
       tags: true
 
   # "staging" deploy
-  - provider: bintray
-    user: talam3fs
-    key: $BINTRAY_API_KEY
-    file: descriptor.json
+  - provider: s3
+    access_key_id:
+      secure: "mZqumamuaxNPe3a48+tCfbGk14q0vGnfP8szJ1kiGNHy08WFB5rhTLD1Az3EZ52/loCYoBZqIqq0najizmA/Uj3A95dgCtz47q2bXocnNz10nvazkcMvihLZ6eOU3jRUnhQDeQtD8utUmDqceQwX+Wi3UcZ9Kts4dTimoRifDTRwPv9aokL2kBOCs9BTbeML5jwQdxQjsQ7YlmZ+5E4qPNq3YtQTM/9+m0/t0Xg0wpPTelW+uW7UCsNDQn0QkFPCGWHjDKmBGBlT273xRnE/2z1EVPWGjuOujdrzKOpM/bi3rau8A7vdL85LIHRjW9nYuN3MxaKlKDk5mJAMhz77qBd88kBEBrn0SELtX7uPYJQrSqwkf8LUm+Na22MjhPsLwkoAM4nM9HwJwNSM4xFyC3FW9MrbG4hCw2lZnhZx58hwDUw/ycfFqYOrxKUfIIabBpFbFtDYzukg0drokcOazD9/gwkQWezYNwZTJ1jcU/bKCZT+BRKXA/IMfrxO/c+i6MStQfTpPOukY62uhCBV7ZRWZtL9uX9sfjkF1vxQU/rzsBaqDPl2NiTj30RUpzFGAu+cTnx8s885+PJAd9X+ROoD29EiDVB3Q0Q99UCNm7RWoFduGfUt40tiQt/ECn/ho52U8g2BHWMtYkFU3zie1EJxQMKVuiqCjFv+Q+Bg6Ys="
+    secret_access_key:
+      secure: "UFuKE4AMXLFLLNfz5jWFiTAcQXz3vpmgo2HXnQb8PLdowF4z3XKlZSJM/cjJG+cDfU/hAqsvttqR3ApBu4wcCcon7IHo9ZnR+/Gu4HUBrTAdaYJXsgKU0HCjm7j439cmLDgLeqibuL290mPhX/xcY1AZZnBvfJi+pi29qhKEAF8r3SnSZbUqc1wP56jODFHzxSa9o91Yos93V7CyacZFZlzoc7+CXC61C/K+4o2iUK1qtBZks+NPhyP+z7jVJ7JIeFyMEIv7TOJKn7OZLmyXtAQI3QlhWfboU/DW7K1r6CEKj+152A07Gzyhke4O86ratV3LPAo3FAYc88sO+Eh7BFnKKJlaIM1J+1WKoqiWGtlP4tT9ilZgyIgsLxaOINz61IDfekZppDldihe0bE9qpHCdUCldAv8TNCYRpFo2cQ7sM7fIQqX2l++f/NpYvn6eOX8IftyaOPOuKDbauPcv0PceiwiKiUyeNxxSaLYrhlmAc14W1yh2M2JehB6Xb73BD9lVXtSx8tIxa13+fHIrey3NAJ1PT3se5pfThR3zA7fThq9tN7aMZZ0iG1lZbyf/Gk0nHHE20XUAZ1hyaNtHptAXsK5QcklJlgRGpxMrt1jDGTp2KJnMeInyg/oC/PID/OKQA+rX3rVfBoK++/op7nhKnfBR4eNzHLOX8U3B4D4="
+    bucket: tactycalstg
+    local-dir: ./pkg/$PACKAGE_TYPE
+    upload-dir: $PACKAGE_TYPE
+    acl: public_read
     skip_cleanup: true
+    region: eu-central-1
     on:
       go: 1.8.3
       branch: master
+    # user: talam3fs
+    # key: $BINTRAY_API_KEY
+    # file: descriptor.json
+    # skip_cleanup: true
 
   # "simulated" deploy
-  - provider: script
-    script: ls -laR .
+  # - provider: script
+  #   script: ls -laR .
+  - provider: s3
+    access_key_id:
+      secure: "mZqumamuaxNPe3a48+tCfbGk14q0vGnfP8szJ1kiGNHy08WFB5rhTLD1Az3EZ52/loCYoBZqIqq0najizmA/Uj3A95dgCtz47q2bXocnNz10nvazkcMvihLZ6eOU3jRUnhQDeQtD8utUmDqceQwX+Wi3UcZ9Kts4dTimoRifDTRwPv9aokL2kBOCs9BTbeML5jwQdxQjsQ7YlmZ+5E4qPNq3YtQTM/9+m0/t0Xg0wpPTelW+uW7UCsNDQn0QkFPCGWHjDKmBGBlT273xRnE/2z1EVPWGjuOujdrzKOpM/bi3rau8A7vdL85LIHRjW9nYuN3MxaKlKDk5mJAMhz77qBd88kBEBrn0SELtX7uPYJQrSqwkf8LUm+Na22MjhPsLwkoAM4nM9HwJwNSM4xFyC3FW9MrbG4hCw2lZnhZx58hwDUw/ycfFqYOrxKUfIIabBpFbFtDYzukg0drokcOazD9/gwkQWezYNwZTJ1jcU/bKCZT+BRKXA/IMfrxO/c+i6MStQfTpPOukY62uhCBV7ZRWZtL9uX9sfjkF1vxQU/rzsBaqDPl2NiTj30RUpzFGAu+cTnx8s885+PJAd9X+ROoD29EiDVB3Q0Q99UCNm7RWoFduGfUt40tiQt/ECn/ho52U8g2BHWMtYkFU3zie1EJxQMKVuiqCjFv+Q+Bg6Ys="
+    secret_access_key:
+      secure: "UFuKE4AMXLFLLNfz5jWFiTAcQXz3vpmgo2HXnQb8PLdowF4z3XKlZSJM/cjJG+cDfU/hAqsvttqR3ApBu4wcCcon7IHo9ZnR+/Gu4HUBrTAdaYJXsgKU0HCjm7j439cmLDgLeqibuL290mPhX/xcY1AZZnBvfJi+pi29qhKEAF8r3SnSZbUqc1wP56jODFHzxSa9o91Yos93V7CyacZFZlzoc7+CXC61C/K+4o2iUK1qtBZks+NPhyP+z7jVJ7JIeFyMEIv7TOJKn7OZLmyXtAQI3QlhWfboU/DW7K1r6CEKj+152A07Gzyhke4O86ratV3LPAo3FAYc88sO+Eh7BFnKKJlaIM1J+1WKoqiWGtlP4tT9ilZgyIgsLxaOINz61IDfekZppDldihe0bE9qpHCdUCldAv8TNCYRpFo2cQ7sM7fIQqX2l++f/NpYvn6eOX8IftyaOPOuKDbauPcv0PceiwiKiUyeNxxSaLYrhlmAc14W1yh2M2JehB6Xb73BD9lVXtSx8tIxa13+fHIrey3NAJ1PT3se5pfThR3zA7fThq9tN7aMZZ0iG1lZbyf/Gk0nHHE20XUAZ1hyaNtHptAXsK5QcklJlgRGpxMrt1jDGTp2KJnMeInyg/oC/PID/OKQA+rX3rVfBoK++/op7nhKnfBR4eNzHLOX8U3B4D4="
+    bucket: tactycalstg
+    local-dir: ./pkg/$PACKAGE_TYPE
+    upload-dir: $PACKAGE_TYPE
+    acl: public_read
+    skip_cleanup: true
+    region: eu-central-1
     on:
       go: 1.8.3
       all_branches: true
