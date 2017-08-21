@@ -30,16 +30,6 @@ before_deploy:
   - if [ $TRAVIS_TAG ]; then SUBJECT=tactycal; else SUBJECT=3fs-talam; fi; echo "SUBJECT=${SUBJECT}"
 
 deploy:
-  # "production" deploy
-  - provider: bintray
-    user: talam3fs
-    key: $BINTRAY_API_KEY
-    file: descriptor.json
-    skip_cleanup: true
-    on:
-      go: 1.8.3
-      tags: true
-
   # "staging" deploy
   - provider: s3
     access_key_id:
@@ -53,16 +43,10 @@ deploy:
     skip_cleanup: true
     region: eu-central-1
     on:
-      go: 1.8.3
       branch: master
-    # user: talam3fs
-    # key: $BINTRAY_API_KEY
-    # file: descriptor.json
-    # skip_cleanup: true
+      go: 1.8.3
 
   # "simulated" deploy
-  # - provider: script
-  #   script: ls -laR .
   - provider: s3
     access_key_id:
       secure: "mZqumamuaxNPe3a48+tCfbGk14q0vGnfP8szJ1kiGNHy08WFB5rhTLD1Az3EZ52/loCYoBZqIqq0najizmA/Uj3A95dgCtz47q2bXocnNz10nvazkcMvihLZ6eOU3jRUnhQDeQtD8utUmDqceQwX+Wi3UcZ9Kts4dTimoRifDTRwPv9aokL2kBOCs9BTbeML5jwQdxQjsQ7YlmZ+5E4qPNq3YtQTM/9+m0/t0Xg0wpPTelW+uW7UCsNDQn0QkFPCGWHjDKmBGBlT273xRnE/2z1EVPWGjuOujdrzKOpM/bi3rau8A7vdL85LIHRjW9nYuN3MxaKlKDk5mJAMhz77qBd88kBEBrn0SELtX7uPYJQrSqwkf8LUm+Na22MjhPsLwkoAM4nM9HwJwNSM4xFyC3FW9MrbG4hCw2lZnhZx58hwDUw/ycfFqYOrxKUfIIabBpFbFtDYzukg0drokcOazD9/gwkQWezYNwZTJ1jcU/bKCZT+BRKXA/IMfrxO/c+i6MStQfTpPOukY62uhCBV7ZRWZtL9uX9sfjkF1vxQU/rzsBaqDPl2NiTj30RUpzFGAu+cTnx8s885+PJAd9X+ROoD29EiDVB3Q0Q99UCNm7RWoFduGfUt40tiQt/ECn/ho52U8g2BHWMtYkFU3zie1EJxQMKVuiqCjFv+Q+Bg6Ys="
@@ -75,5 +59,5 @@ deploy:
     skip_cleanup: true
     region: eu-central-1
     on:
-      go: 1.8.3
       all_branches: true
+      go: 1.8.3
