@@ -40,6 +40,7 @@ deploy:
   - provider: releases
     api_key:
       secure: MDf83uefi0Boqupbx2brr8Uqcm03EM0MREHO/CuAYoz/wuqZODRG+dZgDjKcSWEk1Kpm2Pp0pOr39NKJoVXQwjL1fCPxOwGF79MEpwyDkFBLJQusKfjwhFMKofhJQTbQIEHjBf+brMLEAlAeuHkBO9HI0JWxWDTHk1iXopxkOdx/FFkWCBE+Ae0H7NcADzCNKA0366UwUXihmwu8y20akdiGNCEzBypE96JJHHjOMg6AfqokeXuIiCT9h0EP9vSmjyhsmsOzDU5Vcjjqu0867bMVFK+ztTmsZVM6BenAgNlwOtaWLqth+o8ZRiD55A4GmmzE5fIVZfI3IaMf8vR8dubBhAvps7uuGkAHqMa+gijXDN8VX+HJxqLj06kfLRXq2Vf3IB8fmQCEQGd7nd22EZGkWKBDntx7St8M6U44jGjfL8uRCnus5q9C1W86fAR8hrkmaxGI+0779XqOOiqcLtqSx31wuF73f73qUb4yIAAfhOLUHH4ue/LZ0enySbUFcA2fvM3W11+oQVr9KtDRGozRgEdSgaRD13V/SLxNdCb/wvYbsovWbVr5NTKcDg+3EDIM5ccYYueUZXomJwzQ0Fdk2SToAyAeFUjF0AK3xmiGwvqMrsZI0m5dfKuvkeE4Yr0BcOIRNm5ROUi0xrUXF/oupV+64bt4uHRhmcmc3tg=
+    file_glob: true
     file: ./pkg/$PACKAGE_TYPE/*
     skip_cleanup: true
     on:
