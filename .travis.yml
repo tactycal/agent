@@ -1,9 +1,8 @@
 language: go
 
 go:
-- 1.7.6
 - 1.8.3
-- 1.9beta2
+- 1.9
 
 env:
   matrix:
@@ -35,7 +34,7 @@ deploy:
     region: eu-central-1
     on:
       tags: true
-      go: 1.8.3
+      go: 1.9
 
   - provider: releases
     api_key:
@@ -45,7 +44,7 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
-      go: 1.8.3
+      go: 1.9
 
   # "staging" deploy
   - provider: s3
@@ -61,7 +60,7 @@ deploy:
     region: eu-central-1
     on:
       branch: master
-      go: 1.8.3
+      go: 1.9
 
   # "simulated" deploy
   - provider: script
@@ -69,4 +68,4 @@ deploy:
     skip_cleanup: true
     on:
       all_branches: true
-      go: 1.8.3
+      go: 1.9
