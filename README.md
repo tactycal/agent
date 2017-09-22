@@ -6,7 +6,7 @@ Tactycal agent is a tool for collecting details about the machine and a list of 
 
 ### Prebuilt binaries
 
-Please visit ["Download agent"](https://beta.tactycal.com/agents) section in Tactycal for detailed instructions on how to install the agent on your system.
+Please visit ["Download agent"](https://app.tactycal.com/docs/agents) section in Tactycal for detailed instructions on how to install the agent on your system.
 
 ### Building from source
 
