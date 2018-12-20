@@ -43,7 +43,7 @@ clean: ## cleans up the repository
 	/bin/rm -rf $(DATADIR)
 	/bin/rm -rf ./.state
 
-test: vet ## runs unit tests
+test: lint vet ## runs unit tests
 	go test -v ./...
 
 format: ## formats the code
@@ -51,6 +51,9 @@ format: ## formats the code
 
 vet: ## examines the go code with `go vet`
 	go vet ./...
+
+lint: ## lint the source code
+	golint -set_exit_status $(shell go list ./...)
 
 up: $(addprefix up/,$(DISTRIBUTIONS)) ## start agents for all distributions
 up/%: build ## starts the agent for a specific distribution
