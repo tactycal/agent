@@ -9,21 +9,21 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 func TestNewConfig_Valid(t *testing.T) {
 	fixtures := []struct {
 		title    string
 		data     []byte
-		expected *Config
+		expected *config
 	}{
 		{
 			title: "minimal config",
 			data:  []byte(`token=TOKEN`),
-			expected: &Config{
+			expected: &config{
 				Token:         "TOKEN",
-				Uri:           "https://api.tactycal.com",
+				URI:           "https://api.tactycal.com",
 				Labels:        []string{},
 				StatePath:     "/default/path",
 				ClientTimeout: time.Second,
@@ -36,9 +36,9 @@ func TestNewConfig_Valid(t *testing.T) {
 			              labels=$PATH,label
 			              timeout=10s
 			              state=/path/to/state`),
-			expected: &Config{
+			expected: &config{
 				Token:         "TOKEN",
-				Uri:           "API_URL",
+				URI:           "API_URL",
 				Labels:        []string{os.Getenv("PATH"), "label"},
 				ClientTimeout: time.Second * 10,
 				StatePath:     "/path/to/state",
@@ -48,11 +48,11 @@ func TestNewConfig_Valid(t *testing.T) {
 
 	for _, fixture := range fixtures {
 		t.Run(fixture.title, func(t *testing.T) {
-			s := stubUtils.NewStubs(t, &stubUtils.ReadFileStub{Path: "path", Output: fixture.data})
+			s := stubutils.NewStubs(t, &stubutils.ReadFileStub{Path: "path", Output: fixture.data})
 			defer s.Close()
 
 			// parse
-			c, err := NewConfig("path", "/default/path", time.Second)
+			c, err := newConfig("path", "/default/path", time.Second)
 
 			if err != nil {
 				t.Error("Error should be nil; got", err)
@@ -92,15 +92,15 @@ func TestNewConfig_Errors(t *testing.T) {
 	for _, fixture := range fixtures {
 		t.Run(fixture.title, func(t *testing.T) {
 			// // create a temp file
-			s := stubUtils.NewStubs(t)
+			s := stubutils.NewStubs(t)
 			if bytes.Equal(fixture.data, []byte("missing")) {
-				s.Add(&stubUtils.ReadFileStub{Err: stubUtils.OhNoErr})
+				s.Add(&stubutils.ReadFileStub{Err: stubutils.ErrOhNo})
 			} else {
-				s.Add(&stubUtils.ReadFileStub{Output: fixture.data})
+				s.Add(&stubutils.ReadFileStub{Output: fixture.data})
 			}
 
 			// parse
-			c, err := NewConfig("path", "/default/path", time.Second)
+			c, err := newConfig("path", "/default/path", time.Second)
 
 			if c != nil {
 				t.Errorf("Expected Config to be nil; got %+v", c)
@@ -117,7 +117,7 @@ func TestNewConfig_Errors(t *testing.T) {
 	}
 }
 
-func mustParseUrl(rawUrl string) *url.URL {
-	parsed, _ := url.Parse(rawUrl)
+func mustParseURL(rawURL string) *url.URL {
+	parsed, _ := url.Parse(rawURL)
 	return parsed
 }

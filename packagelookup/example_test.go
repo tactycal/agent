@@ -1,4 +1,4 @@
-package packageLookup
+package packagelookup
 
 import "fmt"
 

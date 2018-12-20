@@ -1,18 +1,18 @@
-package packageLookup
+package packagelookup
 
 import (
 	"reflect"
 	"regexp"
 	"testing"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 func TestGetPackages(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: "/var/lib/dpkg/status", StubFile: "testdata/ubuntu_status"},
-		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
-		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
+	s := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: "/var/lib/dpkg/status", StubFile: "testdata/ubuntu_status"},
+		&stubutils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
+		&stubutils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
 	expectedResult := []*Package{
@@ -97,8 +97,8 @@ func TestExtractPackageNameFromSource(t *testing.T) {
 }
 
 func TestGetRepositoriesFromSourcesList(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"})
+	s := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"})
 	defer s.Close()
 
 	expectedResult := []string{
@@ -132,9 +132,9 @@ func TestGetNamesOfPackages(t *testing.T) {
 }
 
 func TestGetAptCachePolicy(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"}, // 0.1
-		&stubUtils.CmdStub{Cmd: "apt-cache", Err: stubUtils.OhNoErr})                // 0.2
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"}, // 0.1
+		&stubutils.CmdStub{Cmd: "apt-cache", Err: stubutils.ErrOhNo})                // 0.2
 	defer s.Close()
 
 	testCase := []string{
@@ -247,9 +247,9 @@ func TestIsPackageSourceFromOfficialRepositories(t *testing.T) {
 }
 
 func TestSetOfficialApt(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
-		&stubUtils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
+	s := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: "/etc/apt/sources.list", StubFile: "testdata/ubuntu_source"},
+		&stubutils.CmdStub{Cmd: "apt-cache", StubFile: "testdata/ubuntu_apt_cache"})
 	defer s.Close()
 
 	testCase := []*Package{

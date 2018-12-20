@@ -1,4 +1,4 @@
-// Package osDiscovery implements functions to get basic operating system
+// Package osdiscovery implements functions to get basic operating system
 // identification data for Linux operating system. The following informations
 // are provided:
 //
@@ -10,13 +10,13 @@
 //
 // If any of the called function could not retrieve the information the error
 // will be returned.
-package osDiscovery
+package osdiscovery
 
 import (
 	"errors"
 	"strings"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 // OsInfo contains information about the operating system.
@@ -28,6 +28,7 @@ type OsInfo struct {
 	Fqdn         string `json:"fqdn"`
 }
 
+// List of possible errors
 var (
 	ErrUnknownDistribution = errors.New("Unknown distribution")
 	ErrUnknownRelease      = errors.New("Unknown release")
@@ -77,19 +78,19 @@ func GetDistributionRelease() (string, string, error) {
 	var err error
 
 	// os-release
-	if out, err = stubUtils.ReadFile("/etc/os-release"); err == nil {
+	if out, err = stubutils.ReadFile("/etc/os-release"); err == nil {
 		distribution, release := getValues("ID=", "VERSION_ID=", string(out))
 		return checkDistributionReleaseValue(distribution, release)
 	}
 
 	// fallback to LSB
-	if out, err = stubUtils.ExecCommand("lsb_release", "-ir"); err == nil {
+	if out, err = stubutils.ExecCommand("lsb_release", "-ir"); err == nil {
 		return parseLsbReleaseContent(string(out))
 	}
 
 	// distro specific
 	for _, f := range distributionSpecificFiles {
-		if out, err = stubUtils.ReadFile(f); err == nil {
+		if out, err = stubutils.ReadFile(f); err == nil {
 			distribution, release, err := parseSpecificFileContent(string(out))
 			if err == nil {
 				return distribution, release, nil
@@ -102,7 +103,7 @@ func GetDistributionRelease() (string, string, error) {
 
 // GetArchitecture returns a machine hardware name.
 func GetArchitecture() (string, error) {
-	if out, err := stubUtils.ExecCommand("uname", "-m"); err == nil {
+	if out, err := stubutils.ExecCommand("uname", "-m"); err == nil {
 		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 	return "", ErrUnknownArchitecture
@@ -110,7 +111,7 @@ func GetArchitecture() (string, error) {
 
 // GetKernel returns a kernel release.
 func GetKernel() (string, error) {
-	if out, err := stubUtils.ExecCommand("uname", "-r"); err == nil {
+	if out, err := stubutils.ExecCommand("uname", "-r"); err == nil {
 		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 	return "", ErrUnknownKernel
@@ -118,11 +119,11 @@ func GetKernel() (string, error) {
 
 // GetFqdn returns the fully qualified domain name (FQDN).
 func GetFqdn() (string, error) {
-	if out, err := stubUtils.ExecCommand("hostname", "-f"); err == nil {
+	if out, err := stubutils.ExecCommand("hostname", "-f"); err == nil {
 		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 
-	if out, err := stubUtils.ReadFile("/etc/hostname"); err == nil {
+	if out, err := stubutils.ReadFile("/etc/hostname"); err == nil {
 		return strings.TrimSuffix(string(out), "\n"), nil
 	}
 

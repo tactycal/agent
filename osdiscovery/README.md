@@ -1,7 +1,7 @@
 ### About
 
-Package `osDiscovery` implements functions to get basic operating system 
-identification data for Linux operating system. 
+Package `osdiscovery` implements functions to get basic operating system
+identification data for Linux operating system.
 The following informations are provided:
 
 * Distribution name
@@ -17,11 +17,11 @@ package main
 
 import (
      "fmt"
-     "github.com/tactycal/agent/osDiscovery"
+     "github.com/tactycal/agent/osdiscovery"
 )
 
 func main() {
-    osInfo, err := osDiscovery.Get()
+    osInfo, err := osdiscovery.Get()
     if err != nil {
         fmt.Println(err)
     } else {

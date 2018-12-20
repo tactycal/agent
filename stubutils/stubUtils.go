@@ -1,11 +1,11 @@
-// Package stubUtils provides wrapper functions for reading from file, writing
+// Package stubutils provides wrapper functions for reading from file, writing
 // to file, executing a command and stub interface for unit testing.
 //
-// A stubUtils package has predefined structs for mocking the wrapper functions
+// A stubutils package has predefined structs for mocking the wrapper functions
 // which has been mentioned above. All those sturcts implements ioStub interface
-// which will inform you through Tester interface if any of the passing
+// which will inform you through tester interface if any of the passing
 // arguments to functions or their outputs will not match expected.
-package stubUtils
+package stubutils
 
 import (
 	"errors"
@@ -16,12 +16,12 @@ import (
 	"reflect"
 )
 
-// Readfile is a wrapper function for ioutil.ReadFile.
+// ReadFile is a wrapper function for ioutil.ReadFile.
 var ReadFile = func(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
 }
 
-// Writefile is a wrapper function for ioutil.WriteFile.
+// WriteFile is a wrapper function for ioutil.WriteFile.
 var WriteFile = func(filename string, data []byte, perm os.FileMode) error {
 	return ioutil.WriteFile(filename, data, perm)
 }
@@ -31,24 +31,27 @@ var ExecCommand = func(cmd string, args ...string) ([]byte, error) {
 	return exec.Command(cmd, args...).Output()
 }
 
-// Mock error for testing.
-var OhNoErr = errors.New("oh no")
+// List of mocked errors for testing
+var (
+	ErrOhNo = errors.New("oh no")
+)
 
 type (
+	// Stubs is a wrapper for a stub command
 	Stubs struct {
 		queue           []ioStub
-		t               Tester
+		t               tester
 		origExecCommand func(string, ...string) ([]byte, error)
 		origReadFile    func(string) ([]byte, error)
 		origWriteFile   func(string, []byte, os.FileMode) error
 	}
 
 	ioStub interface {
-		check(Tester, []string) ([]byte, error)
+		check(tester, []string) ([]byte, error)
 	}
 
-	// A Tester is used by NewStubs.
-	Tester interface {
+	// A tester is used by NewStubs.
+	tester interface {
 		Errorf(format string, args ...interface{})
 		Fatalf(format string, args ...interface{})
 	}
@@ -68,7 +71,7 @@ type (
 		Err error
 	}
 
-	// ReadFile implements ioStub interface and is used to mock a ReadFile
+	// ReadFileStub implements ioStub interface and is used to mock a ReadFile
 	// function.
 	ReadFileStub struct {
 		// Path to expected file.
@@ -94,7 +97,7 @@ type (
 	}
 )
 
-func (c *CmdStub) check(t Tester, in []string) ([]byte, error) {
+func (c *CmdStub) check(t tester, in []string) ([]byte, error) {
 	// check command
 	if c.Cmd != "" && c.Cmd != in[0] {
 		t.Errorf("Expected command \"%s\"; received \"%s\"", c.Cmd, in[0])
@@ -122,7 +125,7 @@ func (c *CmdStub) check(t Tester, in []string) ([]byte, error) {
 	return c.Output, c.Err
 }
 
-func (r *ReadFileStub) check(t Tester, in []string) ([]byte, error) {
+func (r *ReadFileStub) check(t tester, in []string) ([]byte, error) {
 	path := in[0]
 
 	// check requested path
@@ -143,7 +146,7 @@ func (r *ReadFileStub) check(t Tester, in []string) ([]byte, error) {
 	return r.Output, r.Err
 }
 
-func (w *WriteFileStub) check(t Tester, in []string) ([]byte, error) {
+func (w *WriteFileStub) check(t tester, in []string) ([]byte, error) {
 	// check path
 	if w.Path != "" && w.Path != in[0] {
 		t.Errorf("Expected path to equal \"%s\"; got \"%s\"", w.Path, in[0])
@@ -162,8 +165,8 @@ func (w *WriteFileStub) check(t Tester, in []string) ([]byte, error) {
 	return nil, w.Err
 }
 
-// Creates a new stub collection and stubs the commands.
-func NewStubs(t Tester, stubs ...ioStub) *Stubs {
+// NewStubs creates a new stub collection and stubs the commands.
+func NewStubs(t tester, stubs ...ioStub) *Stubs {
 	s := &Stubs{
 		t:               t,
 		queue:           stubs,
@@ -173,7 +176,7 @@ func NewStubs(t Tester, stubs ...ioStub) *Stubs {
 	}
 
 	ReadFile = func(path string) ([]byte, error) {
-		stub := s.Get()
+		stub := s.get()
 
 		// did we get something
 		if stub == nil {
@@ -190,7 +193,7 @@ func NewStubs(t Tester, stubs ...ioStub) *Stubs {
 	}
 
 	ExecCommand = func(cmd string, args ...string) ([]byte, error) {
-		stub := s.Get()
+		stub := s.get()
 
 		// did we get something
 		if stub == nil {
@@ -207,7 +210,7 @@ func NewStubs(t Tester, stubs ...ioStub) *Stubs {
 	}
 
 	WriteFile = func(filename string, data []byte, perm os.FileMode) error {
-		stub := s.Get()
+		stub := s.get()
 
 		// did we get something
 		if stub == nil {
@@ -233,7 +236,7 @@ func (s *Stubs) Add(stub ...ioStub) {
 }
 
 // Get pops the first item from the queue. Returns nil if the queue is already empty.
-func (s *Stubs) Get() ioStub {
+func (s *Stubs) get() ioStub {
 	if len(s.queue) == 0 {
 		return nil
 	}
@@ -243,7 +246,7 @@ func (s *Stubs) Get() ioStub {
 	return first
 }
 
-// Resets stubbed commands and and checks if the queue is empty.
+// Close resets stubbed commands and and checks if the queue is empty.
 func (s *Stubs) Close() {
 	// reset functions
 	ExecCommand = s.origExecCommand

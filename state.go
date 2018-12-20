@@ -4,31 +4,31 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
-const DefaultStatePath = "/var/opt/tactycal/state"
+const defaultStatePath = "/var/opt/tactycal/state"
 
 type (
-	State struct {
+	state struct {
 		statePath string
-		data      *StateData
+		data      *stateData
 	}
-	StateData struct {
+	stateData struct {
 		Token string
 	}
 )
 
-func NewState(path string) *State {
-	return &State{
+func newState(path string) *state {
+	return &state{
 		statePath: path,
-		data:      &StateData{},
+		data:      &stateData{},
 	}
 }
 
-func (s *State) read() error {
+func (s *state) read() error {
 	// try to read existing state
-	b, err := stubUtils.ReadFile(s.statePath)
+	b, err := stubutils.ReadFile(s.statePath)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (s *State) read() error {
 	return nil
 }
 
-func (s *State) save() error {
+func (s *state) save() error {
 	// encode data
 	b, err := json.Marshal(s.data)
 	if err != nil {
@@ -49,18 +49,18 @@ func (s *State) save() error {
 	}
 
 	// write data to file
-	if err := stubUtils.WriteFile(s.statePath, b, 0600); err != nil {
+	if err := stubutils.WriteFile(s.statePath, b, 0600); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *State) Reset() error {
+func (s *state) Reset() error {
 	return os.Remove(s.statePath)
 }
 
-func (s *State) GetToken() (string, error) {
+func (s *state) GetToken() (string, error) {
 	if err := s.read(); err != nil {
 		return "", err
 	}
@@ -68,7 +68,7 @@ func (s *State) GetToken() (string, error) {
 	return s.data.Token, nil
 }
 
-func (s *State) SetToken(token string) error {
+func (s *state) SetToken(token string) error {
 	s.data.Token = token
 	return s.save()
 }

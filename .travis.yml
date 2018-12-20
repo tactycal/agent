@@ -9,6 +9,9 @@ env:
   - PACKAGE_TYPE=deb
   - PACKAGE_TYPE=rpm
 
+install:
+  - go get -u golang.org/x/lint/golint
+
 script: make test
 
 before_install:

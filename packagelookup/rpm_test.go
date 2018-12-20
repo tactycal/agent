@@ -1,10 +1,10 @@
-package packageLookup
+package packagelookup
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 func TestGetSourceName(t *testing.T) {
@@ -30,8 +30,8 @@ func TestGetSourceName(t *testing.T) {
 }
 
 func TestGet_amzn(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
 			StubFile: "testdata/amzn_rpm"})
 	defer s.Close()
@@ -62,8 +62,8 @@ func TestGet_amzn(t *testing.T) {
 }
 
 func TestGet_opensuse(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
 			StubFile: "testdata/opensuse_rpm"})
 	defer s.Close()
@@ -92,8 +92,8 @@ func TestGet_opensuse(t *testing.T) {
 }
 
 func TestGet_sles(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
 			StubFile: "testdata/sles_rpm"})
 	defer s.Close()
@@ -123,10 +123,10 @@ func TestGet_sles(t *testing.T) {
 }
 
 func TestGet_rhel(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`}, StubFile: "testdata/rhel_rpm"}, // 0.1
-		&stubUtils.CmdStub{Err: stubUtils.OhNoErr}) // 0.2
+		&stubutils.CmdStub{Err: stubutils.ErrOhNo}) // 0.2
 	defer s.Close()
 
 	// 0.1
@@ -174,8 +174,8 @@ func TestGet_rhel(t *testing.T) {
 }
 
 func TestGet_centos(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
 			StubFile: "testdata/centos_rpm"})
 	defer s.Close()

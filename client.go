@@ -9,54 +9,59 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tactycal/agent/packageLookup"
+	"github.com/tactycal/agent/packagelookup"
 )
 
 const (
-	DefaultClientTimeout  = time.Second * 3
-	ErrorCodeExpiredToken = "TOKEN_EXPIRED"
-	ErrorCodeInvalidToken = "TOKEN_INVALID"
+	defaultClientTimeout  = time.Second * 3
+	errorCodeExpiredToken = "TOKEN_EXPIRED"
+	errorCodeInvalidToken = "TOKEN_INVALID"
 	apiVersionPrefix      = "v2"
 )
 
-type Client struct {
+// List of errors
+var (
+	ErrInvalidToken = fmt.Errorf("token was reported as invalid (perhaps the host was deleted), new host ID will be assigned to this machine")
+)
+
+type client struct {
 	token    string
 	host     *Host
 	uri      string
-	proxyUrl *url.URL
-	state    *State
+	proxyURL *url.URL
+	state    *state
 	timeout  time.Duration
 }
 
-type SendPackagesRequestBody struct {
+type sendPackagesRequestBody struct {
 	*Host
-	Package []*packageLookup.Package `json:"packages"`
+	Package []*packagelookup.Package `json:"packages"`
 }
 
-type ResponseErrorCode struct {
+type responseErrorCode struct {
 	Error string `json:"error"`
 }
 
-type Token struct {
+type token struct {
 	Token string `json:"token"`
 }
 
-func NewClient(cfg *Config, host *Host, state *State, timeout time.Duration) *Client {
+func newClient(cfg *config, host *Host, state *state, timeout time.Duration) *client {
 	// copy labels from config to host
 	host.Labels = cfg.Labels
 
 	// compose the client
-	return &Client{
+	return &client{
 		token:    cfg.Token,
 		host:     host,
-		uri:      cfg.Uri,
-		proxyUrl: cfg.Proxy,
+		uri:      cfg.URI,
+		proxyURL: cfg.Proxy,
 		state:    state,
 		timeout:  timeout,
 	}
 }
 
-func (c *Client) Authenticate() (string, error) {
+func (c *client) Authenticate() (string, error) {
 	// create a request
 	rsp, err := c.apiRequest("POST", "/agent/auth", fmt.Sprintf("Token %s", c.token), &c.host)
 	if err != nil {
@@ -72,7 +77,7 @@ func (c *Client) Authenticate() (string, error) {
 	}
 
 	// decode the response
-	var rspData Token
+	var rspData token
 	decoder := json.NewDecoder(rsp.Body)
 	err = decoder.Decode(&rspData)
 	if err != nil {
@@ -82,13 +87,13 @@ func (c *Client) Authenticate() (string, error) {
 	return rspData.Token, nil
 }
 
-func (c *Client) SendPackageList(packages []*packageLookup.Package) error {
+func (c *client) SendPackageList(packages []*packagelookup.Package) error {
 	token, err := c.getToken()
 	if err != nil {
 		return err
 	}
 
-	body := &SendPackagesRequestBody{
+	body := &sendPackagesRequestBody{
 		Host:    c.host,
 		Package: packages,
 	}
@@ -117,20 +122,20 @@ func (c *Client) SendPackageList(packages []*packageLookup.Package) error {
 	// handle invalid or expired token response
 	if rsp.StatusCode == http.StatusUnauthorized {
 		// check error code
-		errCode := &ResponseErrorCode{}
+		errCode := &responseErrorCode{}
 		if err := json.NewDecoder(rsp.Body).Decode(errCode); err != nil {
 			return err
 		}
 
-		if errCode.Error == ErrorCodeInvalidToken {
+		if errCode.Error == errorCodeInvalidToken {
 			if err := c.state.Reset(); err != nil {
 				return err
 			}
-			return fmt.Errorf("Token was reported as invalid. Perhaps the host was deleted. New host ID will be assigned to this machine.")
+			return ErrInvalidToken
 		}
 
 		// renew a token
-		if errCode.Error == ErrorCodeExpiredToken {
+		if errCode.Error == errorCodeExpiredToken {
 			err := c.renewToken(token)
 			if err == nil {
 				err = fmt.Errorf("Token was reported as expired. It has been renewed")
@@ -142,7 +147,7 @@ func (c *Client) SendPackageList(packages []*packageLookup.Package) error {
 	return fmt.Errorf("API returned status code %d, expected 204", rsp.StatusCode)
 }
 
-func (c *Client) getToken() (string, error) {
+func (c *client) getToken() (string, error) {
 	// try to read token from state
 	token, err := c.state.GetToken()
 	if err == nil && token != "" {
@@ -164,9 +169,9 @@ func (c *Client) getToken() (string, error) {
 	return token, nil
 }
 
-func (c *Client) renewToken(token string) error {
+func (c *client) renewToken(accessToken string) error {
 	// create a request
-	rsp, err := c.apiRequest("POST", "/agent/renew", fmt.Sprintf("Token %s", c.token), &Token{token})
+	rsp, err := c.apiRequest("POST", "/agent/renew", fmt.Sprintf("Token %s", c.token), &token{accessToken})
 	if err != nil {
 		return err
 	}
@@ -176,14 +181,14 @@ func (c *Client) renewToken(token string) error {
 
 	if rsp.StatusCode == 401 {
 		c.state.Reset()
-		return fmt.Errorf("Token was reported as invalid. Perhaps the host was deleted. New host ID will be assigned to this machine.")
+		return ErrInvalidToken
 	}
 
 	if rsp.StatusCode != 200 {
 		return fmt.Errorf("Token could not be renewed")
 	}
 
-	var rspData Token
+	var rspData token
 	decoder := json.NewDecoder(rsp.Body)
 	err = decoder.Decode(&rspData)
 	if err != nil {
@@ -196,7 +201,7 @@ func (c *Client) renewToken(token string) error {
 	return err
 }
 
-func (c *Client) apiRequest(method, endpoint, authorization string, input interface{}) (*http.Response, error) {
+func (c *client) apiRequest(method, endpoint, authorization string, input interface{}) (*http.Response, error) {
 	// encode body
 	body := bytes.NewBuffer(nil)
 	if input != nil {
@@ -223,7 +228,7 @@ func (c *Client) apiRequest(method, endpoint, authorization string, input interf
 	// execute the request
 	client := &http.Client{
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(c.proxyUrl),
+			Proxy: http.ProxyURL(c.proxyURL),
 		},
 		Timeout: c.timeout,
 	}

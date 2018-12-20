@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tactycal/agent/packageLookup"
+	"github.com/tactycal/agent/packagelookup"
 )
 
 func TestAuthenticate_Ok(t *testing.T) {
@@ -34,12 +34,12 @@ func TestAuthenticate_Ok(t *testing.T) {
 
 	initLogging(false)
 
-	client := &Client{
+	c := &client{
 		uri:   ts.URL,
 		token: "token",
 	}
 
-	result, err := client.Authenticate()
+	result, err := c.Authenticate()
 	if err != nil {
 		t.Errorf("An error was not expected; got \"%s\"", err.Error())
 	}
@@ -62,9 +62,9 @@ func TestAuthenticate_StatusUnauthorized(t *testing.T) {
 
 	initLogging(false)
 
-	client := &Client{uri: ts.URL}
+	c := &client{uri: ts.URL}
 
-	_, err := client.Authenticate()
+	_, err := c.Authenticate()
 
 	if err == nil {
 		t.Error("Expected err to not be nil")
@@ -86,19 +86,19 @@ func TestAuthenticate_CloseConn(t *testing.T) {
 
 	initLogging(false)
 
-	client := &Client{uri: ts.URL}
+	c := &client{uri: ts.URL}
 
-	_, err := client.Authenticate()
+	_, err := c.Authenticate()
 	if err == nil {
 		t.Errorf("An error was expected")
 	}
 }
 
 func TestSendPackageList_Ok(t *testing.T) {
-	expectedReqBody := &SendPackagesRequestBody{
+	expectedReqBody := &sendPackagesRequestBody{
 		Host: &Host{Fqdn: "Fqdn"},
-		Package: []*packageLookup.Package{
-			&packageLookup.Package{
+		Package: []*packagelookup.Package{
+			&packagelookup.Package{
 				Name: "Package",
 			},
 		},
@@ -108,11 +108,11 @@ func TestSendPackageList_Ok(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "JWT token" {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(&ResponseErrorCode{ErrorCodeInvalidToken})
+			json.NewEncoder(w).Encode(&responseErrorCode{errorCodeInvalidToken})
 			return
 		}
 
-		reqBody := &SendPackagesRequestBody{}
+		reqBody := &sendPackagesRequestBody{}
 		err := json.NewDecoder(r.Body).Decode(reqBody)
 		if err != nil {
 			http.Error(w, "", http.StatusInternalServerError)
@@ -136,29 +136,29 @@ func TestSendPackageList_Ok(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 
 	// get a state
-	state := NewState(tmpFile.Name())
+	state := newState(tmpFile.Name())
 
 	// setup a client
-	client := &Client{
+	c := &client{
 		state: state,
 		uri:   ts.URL,
 		host:  expectedReqBody.Host,
 	}
 
-	err := client.SendPackageList(expectedReqBody.Package)
+	err := c.SendPackageList(expectedReqBody.Package)
 	if err != nil {
 		t.Errorf("An error was not expected; got \"%s\"", err.Error())
 	}
 }
 
 func TestSendPackageList_InvalidToken(t *testing.T) {
-	expectedErr := "Token was reported as invalid. Perhaps the host was deleted. New host ID will be assigned to this machine."
+	expectedErr := ErrInvalidToken.Error()
 
 	// setup a mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") != "JWT token" {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(&ResponseErrorCode{ErrorCodeInvalidToken})
+			json.NewEncoder(w).Encode(&responseErrorCode{errorCodeInvalidToken})
 			return
 		}
 	}))
@@ -172,15 +172,15 @@ func TestSendPackageList_InvalidToken(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 
 	// get a state
-	state := NewState(tmpFile.Name())
+	state := newState(tmpFile.Name())
 
 	// setup a client
-	client := &Client{
+	c := &client{
 		state: state,
 		uri:   ts.URL,
 	}
 
-	err := client.SendPackageList([]*packageLookup.Package{})
+	err := c.SendPackageList([]*packagelookup.Package{})
 
 	if err == nil {
 		t.Error("Expected err to not be nil")
@@ -197,28 +197,28 @@ func TestSendPackageList_ExpiredToken(t *testing.T) {
 
 	// setup a mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqUrl := r.URL.Path
+		reqURL := r.URL.Path
 
 		// 0.1 packages will be submitted with expired token
-		if strings.HasSuffix(reqUrl, "/submit") && r.Header.Get("Authorization") == "JWT expired_token" {
+		if strings.HasSuffix(reqURL, "/submit") && r.Header.Get("Authorization") == "JWT expired_token" {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(&ResponseErrorCode{ErrorCodeExpiredToken})
+			json.NewEncoder(w).Encode(&responseErrorCode{errorCodeExpiredToken})
 			return
 		}
 
 		// 0.2 a renew process is expected
-		if strings.HasSuffix(reqUrl, "/renew") && r.Header.Get("Authorization") == "Token token" {
-			var token Token
-			json.NewDecoder(r.Body).Decode(&token)
-			if token.Token != "expired_token" {
+		if strings.HasSuffix(reqURL, "/renew") && r.Header.Get("Authorization") == "Token token" {
+			var tkn token
+			json.NewDecoder(r.Body).Decode(&tkn)
+			if tkn.Token != "expired_token" {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
 			w.WriteHeader(http.StatusOK)
 			// return a new token
-			token.Token = expectedNewToken
-			json.NewEncoder(w).Encode(token)
+			tkn.Token = expectedNewToken
+			json.NewEncoder(w).Encode(tkn)
 
 			return
 		}
@@ -235,16 +235,16 @@ func TestSendPackageList_ExpiredToken(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 
 	// get a state
-	state := NewState(tmpFile.Name())
+	state := newState(tmpFile.Name())
 
 	// setup a client
-	client := &Client{
+	c := &client{
 		state: state,
 		uri:   ts.URL,
 		token: "token",
 	}
 
-	err := client.SendPackageList([]*packageLookup.Package{})
+	err := c.SendPackageList([]*packagelookup.Package{})
 
 	if err == nil {
 		t.Error("Expected err to not be nil")
