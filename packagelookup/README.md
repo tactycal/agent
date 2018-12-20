@@ -1,6 +1,6 @@
 ### About
 
-Package `packageLookup` provides function to get list of installed packages.
+Package `packagelookup` provides function to get list of installed packages.
 
 Supported operating systems:
 
@@ -20,11 +20,11 @@ package main
 
 import (
      "fmt"
-     "github.com/tactycal/agent/packageLookup"
+     "github.com/tactycal/agent/packagelookup"
 )
 
 func main() {
-    packages, err := packageLookup.Get("ubuntu")
+    packages, err := packagelookup.Get("ubuntu")
     if err != nil {
         fmt.Println(err)
     } else {

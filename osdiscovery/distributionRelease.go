@@ -1,4 +1,4 @@
-package osDiscovery
+package osdiscovery
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ var distributionSpecificFiles = []string{
 	"/etc/system-release-cpe",
 }
 
-var distributionSpecificFilePrefixToDistroId = map[string]string{
+var distributionSpecificFilePrefixToDistroID = map[string]string{
 	"Debian":        "debian",
 	"Ubuntu":        "ubuntu",
 	"CentOS":        "centos",
@@ -28,7 +28,7 @@ var distributionSpecificFilePrefixToDistroId = map[string]string{
 	"SUSE":          "sles",
 }
 
-var lsbDistributionNameToIdDistributionName = map[string]string{
+var lsbDistributionNameToIDDistributionName = map[string]string{
 	"Debian":                 "debian",
 	"Ubuntu":                 "ubuntu",
 	"RedHatEnterpriseServer": "rhel",
@@ -56,7 +56,7 @@ func checkDistributionReleaseValue(distribution, release string) (string, string
 func parseLsbReleaseContent(content string) (string, string, error) {
 	distribution, release := getValues("Distributor ID:", "Release:", content)
 
-	if d, ok := lsbDistributionNameToIdDistributionName[distribution]; ok {
+	if d, ok := lsbDistributionNameToIDDistributionName[distribution]; ok {
 		distribution = d
 	}
 
@@ -87,7 +87,7 @@ func getValues(regexpField1, regexpField2, content string) (string, string) {
 // parseSpecificFileContent returns distribution and release if file content prefix
 // matches distribution specific file prefix. Otherwise an error is returned
 func parseSpecificFileContent(content string) (string, string, error) {
-	for k, v := range distributionSpecificFilePrefixToDistroId {
+	for k, v := range distributionSpecificFilePrefixToDistroID {
 		if strings.HasPrefix(content, k) {
 			if distribution, release := getDistributionReleaseFromSpecificFileContent(v, content); release != "" {
 				return distribution, release, nil
@@ -98,8 +98,8 @@ func parseSpecificFileContent(content string) (string, string, error) {
 	return "", "", ErrUnknownDistribution
 }
 
-func getDistributionReleaseFromSpecificFileContent(distroId, content string) (string, string) {
-	switch distroId {
+func getDistributionReleaseFromSpecificFileContent(distroID, content string) (string, string) {
+	switch distroID {
 	case "ubuntu":
 		return "ubuntu", getReleaseFromSpecificFileContentDefault("\\d+\\.\\d+", content)
 	case "debian":

@@ -4,16 +4,16 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 func TestLocal(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=amzn\nVERSION_ID=\"2016.09\"")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
-		&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	s := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=amzn\nVERSION_ID=\"2016.09\"")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubutils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
 			Output: []byte("Name: libverto\nArchitecture: x86_64\nVersion: 0.2.5\nRelease: 4.9\nVendor: unknown\nSource: libverto-0.2.5-4.9.src.rpm\nEpoch: (none)")},
 	)
@@ -28,21 +28,21 @@ func TestLocal(t *testing.T) {
 	}
 
 	// 2. error expected from get host info
-	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Err: stubUtils.OhNoErr})
+	s.Add(&stubutils.ReadFileStub{Path: "/etc/os-release", Err: stubutils.ErrOhNo})
 
 	_, err := local()
 	if err == nil {
 		t.Error("An error was expected")
 	}
 
-	// 3. error is expected from packageLookup
-	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=amzn\nVERSION_ID=\"2016.09\"")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
-		&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
-		&stubUtils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
+	// 3. error is expected from packagelookup
+	s.Add(&stubutils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=amzn\nVERSION_ID=\"2016.09\"")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubutils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
+		&stubutils.CmdStub{Cmd: "rpm", Args: []string{`-qa`, `--queryformat`,
 			`Name: %{NAME}\nArchitecture: %{ARCH}\nVersion: %{VERSION}\nRelease: %{RELEASE}\nVendor: %{VENDOR}\nSource: %{SOURCERPM}\nEpoch: %{EPOCH}\n\n`},
-			Err: stubUtils.OhNoErr},
+			Err: stubutils.ErrOhNo},
 	)
 
 	_, err = local()

@@ -1,7 +1,8 @@
 package main
 
-import "github.com/tactycal/agent/osDiscovery"
+import "github.com/tactycal/agent/osdiscovery"
 
+// Host holds information about a single host
 type Host struct {
 	Fqdn         string   `json:"fqdn"`
 	Distribution string   `json:"distribution"`
@@ -11,9 +12,9 @@ type Host struct {
 	Labels       []string `json:"labels"`
 }
 
-func GetHostInfo() (*Host, error) {
+func getHostInfo() (*Host, error) {
 
-	osInfo, err := osDiscovery.Get()
+	osInfo, err := osdiscovery.Get()
 	if err != nil {
 		return nil, err
 	}

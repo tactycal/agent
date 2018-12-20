@@ -9,24 +9,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 const (
-	DefaultConfigurationFile = "/etc/tactycal/agent.conf"
-	DefaultApiUri            = "https://api.tactycal.com"
+	defaultConfigurationFile = "/etc/tactycal/agent.conf"
+	defaultAPIURI            = "https://api.tactycal.com"
 )
 
-type Config struct {
+type config struct {
 	Token         string
-	Uri           string
+	URI           string
 	Proxy         *url.URL
 	Labels        []string
 	StatePath     string
 	ClientTimeout time.Duration
 }
 
-func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, error) {
+func newConfig(file, statePath string, clientTimeout time.Duration) (*config, error) {
 	cfg, err := readConfigurationFromFile(file)
 	if err != nil {
 		return nil, errors.New("configuration: " + err.Error())
@@ -34,7 +34,7 @@ func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, er
 
 	// set defaults
 	if cfg["uri"] == "" {
-		cfg["uri"] = DefaultApiUri
+		cfg["uri"] = defaultAPIURI
 	} else {
 		// trim trailing slashes
 		cfg["uri"] = strings.TrimRight(cfg["uri"], "/")
@@ -51,7 +51,7 @@ func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, er
 
 	// check token is set
 	if cfg["token"] == "" {
-		return nil, errors.New("configuration: No token provided.")
+		return nil, errors.New("configuration: No token provided")
 	}
 
 	// set client timeout
@@ -70,19 +70,19 @@ func NewConfig(file, statePath string, clientTimeout time.Duration) (*Config, er
 	}
 
 	// finally! :)
-	config := &Config{
+	c := &config{
 		Token:         cfg["token"],
-		Uri:           cfg["uri"],
+		URI:           cfg["uri"],
 		Proxy:         urlProxy,
 		Labels:        cleanSplit(cfg["labels"]),
 		ClientTimeout: timeout,
 		StatePath:     cfg["state"],
 	}
-	return config, nil
+	return c, nil
 }
 
 func readConfigurationFromFile(file string) (map[string]string, error) {
-	data, err := stubUtils.ReadFile(file)
+	data, err := stubutils.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -114,16 +114,16 @@ func cleanSplit(str string) []string {
 
 		// check if we need to substitute any of the values
 		if arr[key][:1] == `$` {
-			arr[key] = Getenv(arr[key][1:], arr[key][1:])
+			arr[key] = getenv(arr[key][1:], arr[key][1:])
 		}
 	}
 
 	return arr
 }
 
-// Retuns value of environment variable `name`. If env. variable is empty the
+// getenv returns value of environment variable `name`. If env. variable is empty,
 // defaultValue is returned.
-func Getenv(name, defaultValue string) string {
+func getenv(name, defaultValue string) string {
 	if v := os.Getenv(name); v != "" {
 		return v
 	}

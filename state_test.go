@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 var testStatePath = "testdata/state"
@@ -14,7 +14,7 @@ func TestStateReset_Ok(t *testing.T) {
 	tmpFile, _ := ioutil.TempFile("", "tactycal-agent-ut")
 	defer os.Remove(tmpFile.Name()) // try to delete just in case
 
-	state := NewState(tmpFile.Name())
+	state := newState(tmpFile.Name())
 
 	// call reset
 	err := state.Reset()
@@ -32,7 +32,7 @@ func TestStateReset_Ok(t *testing.T) {
 
 func TestStateReset_Err(t *testing.T) {
 	// create state with unexisting file
-	state := NewState("/should/not/exists")
+	state := newState("/should/not/exists")
 
 	err := state.Reset()
 
@@ -43,11 +43,11 @@ func TestStateReset_Err(t *testing.T) {
 }
 
 func TestStateGetToken_Ok(t *testing.T) {
-	stub := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: testStatePath, Output: []byte(`{"token": "TOKEN"}`)})
+	stub := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: testStatePath, Output: []byte(`{"token": "TOKEN"}`)})
 	defer stub.Close()
 
-	s := NewState(testStatePath)
+	s := newState(testStatePath)
 
 	token, err := s.GetToken()
 
@@ -63,11 +63,11 @@ func TestStateGetToken_Ok(t *testing.T) {
 }
 
 func TestStateGetToken_InvalidJson(t *testing.T) {
-	stub := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: testStatePath, Output: []byte("How to break JSON?")})
+	stub := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: testStatePath, Output: []byte("How to break JSON?")})
 	defer stub.Close()
 
-	s := NewState(testStatePath)
+	s := newState(testStatePath)
 
 	token, err := s.GetToken()
 
@@ -83,17 +83,17 @@ func TestStateGetToken_InvalidJson(t *testing.T) {
 }
 
 func TestStateGetToken_SomeError(t *testing.T) {
-	stub := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: testStatePath, Err: stubUtils.OhNoErr})
+	stub := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: testStatePath, Err: stubutils.ErrOhNo})
 	defer stub.Close()
 
-	s := NewState(testStatePath)
+	s := newState(testStatePath)
 
 	token, err := s.GetToken()
 
 	// check error
-	if err != stubUtils.OhNoErr {
-		t.Errorf("Expected error %v; got %v", stubUtils.OhNoErr, err)
+	if err != stubutils.ErrOhNo {
+		t.Errorf("Expected error %v; got %v", stubutils.ErrOhNo, err)
 	}
 
 	// check token
@@ -103,11 +103,11 @@ func TestStateGetToken_SomeError(t *testing.T) {
 }
 
 func TestStateSetToken_Ok(t *testing.T) {
-	stub := stubUtils.NewStubs(t,
-		&stubUtils.WriteFileStub{Path: testStatePath, Data: []byte(`{"Token":"TOKEN"}`), Mode: 0600})
+	stub := stubutils.NewStubs(t,
+		&stubutils.WriteFileStub{Path: testStatePath, Data: []byte(`{"Token":"TOKEN"}`), Mode: 0600})
 	defer stub.Close()
 
-	state := NewState(testStatePath)
+	state := newState(testStatePath)
 
 	err := state.SetToken("TOKEN")
 
@@ -118,11 +118,11 @@ func TestStateSetToken_Ok(t *testing.T) {
 }
 
 func TestStateSetToken_Error(t *testing.T) {
-	stub := stubUtils.NewStubs(t,
-		&stubUtils.WriteFileStub{Err: stubUtils.OhNoErr})
+	stub := stubutils.NewStubs(t,
+		&stubutils.WriteFileStub{Err: stubutils.ErrOhNo})
 	defer stub.Close()
 
-	state := NewState(testStatePath)
+	state := newState(testStatePath)
 	err := state.SetToken("TOKEN")
 
 	if err == nil {

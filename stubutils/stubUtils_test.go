@@ -1,4 +1,4 @@
-package stubUtils
+package stubutils
 
 import (
 	"fmt"
@@ -78,7 +78,7 @@ func TestCmdStub(t *testing.T) {
 	}
 
 	// 7. wrong stub type
-	expectedErr = fmt.Errorf(`Expected a execCommand stub; got *stubUtils.ReadFileStub`)
+	expectedErr = fmt.Errorf(`Expected a execCommand stub; got *stubutils.ReadFileStub`)
 	s.Add(&ReadFileStub{Path: "/path"})
 	_, err = ExecCommand("command", "arg")
 	if !reflect.DeepEqual(err, expectedErr) {
@@ -124,7 +124,7 @@ func TestReadFileStub(t *testing.T) {
 	}
 
 	// 5. wrong stub type
-	expectedErr = fmt.Errorf(`Expected a readFile stub; got *stubUtils.CmdStub`)
+	expectedErr = fmt.Errorf(`Expected a readFile stub; got *stubutils.CmdStub`)
 	s.Add(&CmdStub{Cmd: "command"})
 
 	_, err = ReadFile("/path")
@@ -166,7 +166,7 @@ func TestWriteFileStub(t *testing.T) {
 	}
 
 	// 5. wrong stub type
-	expectedErr = fmt.Errorf(`Expected a writeFile stub; got *stubUtils.CmdStub`)
+	expectedErr = fmt.Errorf(`Expected a writeFile stub; got *stubutils.CmdStub`)
 	s.Add(&CmdStub{Cmd: "command"})
 
 	err = WriteFile("/path", nil, 0600)

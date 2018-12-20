@@ -4,15 +4,15 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tactycal/agent/stubUtils"
+	"github.com/tactycal/agent/stubutils"
 )
 
 func TestGetHostInfo(t *testing.T) {
-	s := stubUtils.NewStubs(t,
-		&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
-		&stubUtils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
+	s := stubutils.NewStubs(t,
+		&stubutils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Output: []byte("ARCH")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-r"}, Output: []byte("KERN")},
+		&stubutils.CmdStub{Cmd: "hostname", Args: []string{"-f"}, Output: []byte("FQDN")},
 	)
 	defer s.Close()
 	expected := &Host{
@@ -23,15 +23,15 @@ func TestGetHostInfo(t *testing.T) {
 		Kernel:       "KERN",
 	}
 
-	host, _ := GetHostInfo()
+	host, _ := getHostInfo()
 	if !reflect.DeepEqual(host, expected) {
 		t.Errorf("Host\n%+v\ndoesn't match expected\n%+v\n", host, expected)
 	}
 
-	s.Add(&stubUtils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"")},
-		&stubUtils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Err: stubUtils.OhNoErr})
+	s.Add(&stubutils.ReadFileStub{Path: "/etc/os-release", Output: []byte("ID=ubuntu\nID_LIKE=debian\nVERSION_ID=\"14.04\"")},
+		&stubutils.CmdStub{Cmd: "uname", Args: []string{"-m"}, Err: stubutils.ErrOhNo})
 
-	_, err := GetHostInfo()
+	_, err := getHostInfo()
 	if err == nil {
 		t.Error("An error was expected")
 	}

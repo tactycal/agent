@@ -1,4 +1,4 @@
-package stubUtils
+package stubutils
 
 import "testing"
 

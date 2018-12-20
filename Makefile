@@ -7,7 +7,7 @@ DATADIR         := ./data
 CI_COMMIT       ?= dev
 GIT_COMMIT      := $(shell git rev-parse --short HEAD || echo $(CI_COMMIT))
 VERSION         ?= $(shell cat ./VERSION)
-FLAGS           := "-X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(VERSION)"
+FLAGS           := "-X main.gitCommit=$(GIT_COMMIT) -X main.version=$(VERSION)"
 DISTRIBUTIONS   := ubuntu debian rhel centos opensuse sles amzn
 PACKAGE_TYPE    := deb rpm
 

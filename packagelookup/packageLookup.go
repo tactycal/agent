@@ -1,4 +1,4 @@
-// Package packageLookup provides function to get list of installed packages.
+// Package packagelookup provides function to get list of installed packages.
 // Supported operating systems:
 //
 //  - Ubuntu
@@ -8,11 +8,11 @@
 //  - Amazon Linux AMI
 //  - openSUSE
 //  - SUSE Linux Enterprise Server
-package packageLookup
+package packagelookup
 
 import "errors"
 
-// Constants show supported operating systems and can be used as osId argument
+// Constants show supported operating systems and can be used as osID argument
 // in Get function.
 const (
 	// Ubuntu
@@ -31,7 +31,10 @@ const (
 	SLES = "sles"
 )
 
-var ErrDistributionNotSupported = errors.New("Distribution is not supported")
+// List of possible errors
+var (
+	ErrDistributionNotSupported = errors.New("Distribution is not supported")
+)
 
 // Package represent installed package.
 type Package struct {
@@ -50,10 +53,10 @@ type Package struct {
 	maintainer string
 }
 
-// Returns installed packages for a given operating system. osId argument must
+// Get returns installed packages for a given operating system. osID argument must
 // be valid operating system distributor id provided in /etc/os-release file.
-func Get(osId string) ([]*Package, error) {
-	switch osId {
+func Get(osID string) ([]*Package, error) {
+	switch osID {
 	case UBUNTU:
 		return getApt(aptMaintainerUbuntu, aptPatchUbuntu)
 	case DEBIAN:

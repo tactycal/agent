@@ -1,4 +1,4 @@
-package osDiscovery
+package osdiscovery
 
 import "fmt"
 
